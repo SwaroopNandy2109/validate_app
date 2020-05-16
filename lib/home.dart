@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                             onTap: () => Navigator.of(context).pop(),
                             child: Icon(
                               Icons.cancel,
-                              color: Colors.red,
+                              color: Theme.of(context).primaryColor,
                               size: 30,
                             ),
                           )
