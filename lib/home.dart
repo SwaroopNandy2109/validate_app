@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:validatedapp/tabs/post_page.dart';
 import 'package:validatedapp/tabs/add_post.dart';
+import 'package:validatedapp/tabs/post_page.dart';
 import 'package:validatedapp/tabs/profile.dart';
 
 class HomePage extends StatefulWidget {

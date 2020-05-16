@@ -16,7 +16,7 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
           FlatButton.icon(
             icon: Icon(Icons.arrow_drop_down),
             label: Text(categoryChoice.isEmpty || categoryChoice == null
-                ? 'Categories'
+                ? 'Home'
                 : categoryChoice),
             onPressed: () {
               showModalBottomSheet(
@@ -33,9 +33,10 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
+                        dropdownOption('Home'),
                         dropdownOption('Politics'),
                         dropdownOption('Sports'),
-                        dropdownOption('News'),
+//                        dropdownOption('News'),
                         dropdownOption('Economy'),
                         dropdownOption('Business'),
                         dropdownOption('Entertainment'),
