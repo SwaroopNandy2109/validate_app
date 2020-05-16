@@ -7,7 +7,7 @@ class HomeBarPage extends StatefulWidget {
 }
 
 class _HomeBarPageState extends State<HomeBarPage> {
-  String categoryChoice = '';
+  String categoryChoice = 'All';
 
   @override
   Widget build(BuildContext context) {
@@ -16,28 +16,28 @@ class _HomeBarPageState extends State<HomeBarPage> {
       children: <Widget>[
         FlatButton.icon(
           icon: Icon(Icons.arrow_drop_down),
-          label: Text(categoryChoice.isEmpty || categoryChoice == null
-              ? 'Home'
-              : categoryChoice),
+          label: Text(categoryChoice),
           onPressed: () {
             showModalBottomSheet(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(15.0),
-                  topRight: Radius.circular(15.0),
-                ),
-              ),
+              backgroundColor: Colors.transparent,
               context: context,
               builder: (BuildContext context) {
                 return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10),
                   height: MediaQuery.of(context).size.height * 0.5,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      topRight: Radius.circular(10.0),
+                    ),
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      dropdownOption('Home'),
+                      dropdownOption('All'),
                       dropdownOption('Politics'),
                       dropdownOption('Sports'),
-//                      dropdownOption('News'),
                       dropdownOption('Economy'),
                       dropdownOption('Business'),
                       dropdownOption('Entertainment'),
@@ -76,10 +76,3 @@ class _HomeBarPageState extends State<HomeBarPage> {
     );
   }
 }
-//Text(
-//'Home Page',
-//style: TextStyle(
-//fontSize: 45,
-//color: Colors.grey,
-//),
-//),

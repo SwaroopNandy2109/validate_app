@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:validatedapp/constants/textstyle.dart';
+import 'package:validatedapp/constants/textStyle.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -42,7 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   width: 20,
                 ),
                 Text(
-                  "Name idhar aayega",
+                  "Carry Minati",
                   style: styleText,
                 ),
               ],
@@ -59,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   width: 20,
                 ),
                 Text(
-                  "Email idhar aayega",
+                  "carryminati@tiktokkeliyeban.com",
                   style: styleText,
                 ),
               ],
@@ -75,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   width: 20,
                 ),
                 Text(
-                  "Date idhar jaayega",
+                  "who TF cares!",
                   style: styleText,
                 ),
               ],

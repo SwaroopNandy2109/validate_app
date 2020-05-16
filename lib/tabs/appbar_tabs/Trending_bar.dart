@@ -6,7 +6,7 @@ class TrendingBarPage extends StatefulWidget {
 }
 
 class _TrendingBarPageState extends State<TrendingBarPage> {
-  String categoryChoice = '';
+  String categoryChoice = 'All';
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +15,7 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
         children: <Widget>[
           FlatButton.icon(
             icon: Icon(Icons.arrow_drop_down),
-            label: Text(categoryChoice.isEmpty || categoryChoice == null
-                ? 'Home'
-                : categoryChoice),
+            label: Text(categoryChoice),
             onPressed: () {
               showModalBottomSheet(
                 shape: RoundedRectangleBorder(
@@ -33,10 +31,9 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        dropdownOption('Home'),
+                        dropdownOption('All'),
                         dropdownOption('Politics'),
                         dropdownOption('Sports'),
-//                        dropdownOption('News'),
                         dropdownOption('Economy'),
                         dropdownOption('Business'),
                         dropdownOption('Entertainment'),
