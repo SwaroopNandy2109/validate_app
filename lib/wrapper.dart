@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:validatedapp/auth_screens/login.dart';
+import 'package:validatedapp/auth_screens/switchAuthenticate.dart';
 import 'package:validatedapp/home.dart';
 import 'package:validatedapp/models/user.dart';
 
@@ -16,7 +16,7 @@ class _WrapperState extends State<Wrapper> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
     if(user == null)
-      return LoginPage();
+      return Authenticate();
     else
       return HomePage();
   }
