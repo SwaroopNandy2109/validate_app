@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:validatedapp/constants/loading_widget.dart';
 import 'package:validatedapp/constants/textStyle.dart';
+import 'package:validatedapp/services/auth.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -9,9 +11,11 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  bool loading = false;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? Loading():Scaffold(
       appBar: AppBar(
         title: Text(
           'Profile',
@@ -83,6 +87,22 @@ class _ProfilePageState extends State<ProfilePage> {
                   style: styleText,
                 ),
               ],
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            FlatButton.icon(
+              onPressed: () async {
+                setState(() {
+                  loading = true;
+                });
+                await AuthService().signOut();
+              },
+              icon: Icon(Icons.exit_to_app),
+              label: Text(
+                'Logout'.toUpperCase(),
+                style: GoogleFonts.ubuntu(),
+              ),
             )
           ],
         ),

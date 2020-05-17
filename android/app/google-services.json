@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "561025022806",
+    "firebase_url": "https://fact-11947.firebaseio.com",
+    "project_id": "fact-11947",
+    "storage_bucket": "fact-11947.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:561025022806:android:1e25ce40314306c75374f7",
+        "android_client_info": {
+          "package_name": "com.swaroop2000.validatedapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "561025022806-d3mf71aqer9dgiu0c6bvaahtdfubbuaa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.swaroop2000.validatedapp",
+            "certificate_hash": "818b2e0397385c9b48a87983b08be644d2029d54"
+          }
+        },
+        {
+          "client_id": "561025022806-ak27ltnt0m266niu7bk3luv2c05j6e0a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5bRnoa_-mDTO3GteaTdrtuwgXSsJu_v4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "561025022806-ak27ltnt0m266niu7bk3luv2c05j6e0a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
