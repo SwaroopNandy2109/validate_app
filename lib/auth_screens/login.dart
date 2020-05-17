@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
               ],
             ),
             body: Padding(
-              padding: EdgeInsets.fromLTRB(50, 20, 50, 0),
+              padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
               child: Center(
                 child: ListView(
                   children: <Widget>[
