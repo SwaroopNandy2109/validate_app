@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:validatedapp/tabs/appbar_tabs/Home_bar.dart';
 import 'package:validatedapp/tabs/appbar_tabs/Trending_bar.dart';
 
@@ -14,13 +15,14 @@ class _PostPageState extends State<PostPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Posts'),
+          title: Text('Posts',style: GoogleFonts.ubuntu(
+              fontWeight: FontWeight.bold),),
           centerTitle: true,
           bottom: TabBar(isScrollable: true, tabs: <Widget>[
             Tab(
               child: Text(
                 'Home',
-                style: TextStyle(
+                style: GoogleFonts.ubuntu(
                   fontWeight: FontWeight.bold,
                   fontSize: 17,
                   letterSpacing: 1.3,
@@ -30,7 +32,7 @@ class _PostPageState extends State<PostPage> {
             Tab(
               child: Text(
                 'Trending',
-                style: TextStyle(
+                style: GoogleFonts.ubuntu(
                   fontWeight: FontWeight.bold,
                   fontSize: 17,
                   letterSpacing: 1.3,

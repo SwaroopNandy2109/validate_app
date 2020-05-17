@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:validatedapp/constants/textStyle.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -12,7 +13,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text(
+          'Profile',
+          style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: Padding(

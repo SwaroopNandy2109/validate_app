@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TrendingBarPage extends StatefulWidget {
   @override
@@ -15,7 +16,10 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
         children: <Widget>[
           FlatButton.icon(
             icon: Icon(Icons.arrow_drop_down),
-            label: Text(categoryChoice),
+            label: Text(
+              categoryChoice,
+              style: GoogleFonts.ubuntu(fontSize: 17),
+            ),
             onPressed: () {
               showModalBottomSheet(
                 shape: RoundedRectangleBorder(
@@ -53,7 +57,7 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
     return ListTile(
       title: Text(
         title,
-        style: TextStyle(
+        style: GoogleFonts.ubuntu(
             fontWeight: title == categoryChoice ? FontWeight.bold : null,
             fontSize: 16.5),
       ),

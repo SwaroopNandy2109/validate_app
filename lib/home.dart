@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:validatedapp/tabs/post_page.dart';
 import 'package:validatedapp/tabs/profile.dart';
 
@@ -55,7 +56,7 @@ class _HomePageState extends State<HomePage> {
                         children: <Widget>[
                           Text(
                             'POST!',
-                            style: TextStyle(
+                            style: GoogleFonts.ubuntu(
                               fontSize: 25,
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -107,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                             child: Icon(
                               Icons.cancel,
                               color: Theme.of(context).primaryColor,
-                              size: 30,
+                              size: 25,
                             ),
                           )
                         ],
