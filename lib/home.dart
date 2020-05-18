@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:validatedapp/services/auth.dart';
@@ -6,7 +5,6 @@ import 'package:validatedapp/tabs/post_page.dart';
 import 'package:validatedapp/tabs/profile.dart';
 
 class HomePage extends StatefulWidget {
-
   HomePage({Key key, this.auth, this.userId, this.logoutCallback})
       : super(key: key);
 
@@ -29,9 +27,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     controller = PageController();
-
     _checkEmailVerification();
-
   }
 
   void _checkEmailVerification() async {
@@ -41,12 +37,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-    void _resentVerifyEmail(){
+  void _resentVerifyEmail() {
     widget.auth.sendEmailVerification();
     _showVerifyEmailSentDialog();
   }
 
-    void _showVerifyEmailDialog() {
+  void _showVerifyEmailDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -104,7 +100,10 @@ class _HomePageState extends State<HomePage> {
           controller: controller,
           children: <Widget>[
             PostPage(),
-            ProfilePage(auth: widget.auth, logoutCallback: widget.logoutCallback,),
+            ProfilePage(
+              auth: widget.auth,
+              logoutCallback: widget.logoutCallback,
+            ),
           ],
         ),
         floatingActionButton: Container(

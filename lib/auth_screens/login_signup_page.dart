@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:validatedapp/constants/loading_widget.dart';
+import 'package:validatedapp/constants/textStyle.dart';
 import 'package:validatedapp/services/auth.dart';
 
 class LoginSignupPage extends StatefulWidget {
@@ -14,7 +16,7 @@ class LoginSignupPage extends StatefulWidget {
 }
 
 class _LoginSignupPageState extends State<LoginSignupPage> {
-  final _formKey = new GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   String _email;
   String _password;
@@ -39,8 +41,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   void validateAndSubmit() async {
     setState(() {
       _errorMessage = "";
-      _isLoading = true;
+      _isLoading = false;
     });
+
     if (validateAndSave()) {
       String userId = "";
       try {
@@ -57,6 +60,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           _isLoading = false;
         });
         if (userId.length > 0 && userId != null && _isLoginForm) {
+          setState(() {
+            _isLoading = true;
+          });
           widget.loginCallback();
         }
       } catch (e) {
@@ -66,6 +72,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           _errorMessage = e.message;
           _formKey.currentState.reset();
         });
+        _showErrorMessageAlert();
       }
     }
   }
@@ -92,16 +99,18 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Fact Checked'),
-        ),
-        body: Stack(
-          children: <Widget>[
-            _showForm(),
-            _showCircularProgress(),
-          ],
-        ));
+    return _isLoading
+        ? Loading()
+        : Scaffold(
+            appBar: AppBar(
+              title: Text(
+                _isLoginForm ? 'Sign In' : 'Register',
+                style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+              ),
+              centerTitle: true,
+            ),
+            body: _showForm(),
+          );
   }
 
   void _showVerifyEmailSentDialog() {
@@ -110,12 +119,11 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Verify your account"),
-          content:
-              new Text("Link to verify account has been sent to your email"),
+          title: Text("Verify your account"),
+          content: Text("Link to verify account has been sent to your email"),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text("Dismiss"),
+            FlatButton(
+              child: Text("Dismiss"),
               onPressed: () {
                 toggleFormMode();
                 Navigator.of(context).pop();
@@ -127,32 +135,36 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     );
   }
 
-  Widget _showCircularProgress() {
-    if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
-    return Container(
-      height: 0.0,
-      width: 0.0,
-    );
-  }
-
   List<Widget> _toggleForm() {
     List<Widget> widgetList = [];
     if (_isLoginForm) {
+      widgetList.add(SizedBox(
+        height: MediaQuery.of(context).size.height * 0.1,
+      ));
       widgetList.add(showEmailInput());
       widgetList.add(showPasswordInput());
       widgetList.add(showPrimaryButton());
+      widgetList.add(SizedBox(
+        height: 25,
+      ));
       widgetList.add(showSecondaryButton());
-      widgetList.add(showErrorMessage());
+      widgetList.add(SizedBox(
+        height: 25,
+      ));
+      widgetList.add(googleButton());
+      widgetList.add(SizedBox(
+        height: MediaQuery.of(context).size.height * 0.05,
+      ));
     } else {
       widgetList.add(showFirstNameInput());
       widgetList.add(showLastNameInput());
       widgetList.add(showEmailInput());
       widgetList.add(showPasswordInput());
       widgetList.add(showPrimaryButton());
+      widgetList.add(SizedBox(
+        height: 25,
+      ));
       widgetList.add(showSecondaryButton());
-      widgetList.add(showErrorMessage());
     }
 
     return widgetList;
@@ -161,87 +173,87 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Widget _showForm() {
     return ListView(
       children: <Widget>[
-        new Container(
+        Container(
           padding: EdgeInsets.all(16.0),
-          child: new Form(
+          child: Form(
             key: _formKey,
-            child: new ListView(
+            child: ListView(
               shrinkWrap: true,
               children: _toggleForm(),
             ),
           ),
         ),
-        FlatButton.icon(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(7.0),
-          ),
-          padding: EdgeInsets.all(15.0),
-          color: Colors.deepPurple,
-          onPressed: () async {
-            setState(() {
-              _isLoading = false;
-            });
-            String userId = await widget.auth.googleSignIn();
-//
-//            setState(() {
-//              _isLoading = false;
-//            });
-            if (userId.length > 0 && userId != null && _isLoginForm) {
-              widget.loginCallback();
-            }
-          },
-          icon: Icon(
-            FontAwesomeIcons.google,
-            color: Colors.white,
-            size: 25.0,
-          ),
-          label: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Text(
-              'sign in with google'.toUpperCase(),
-              style: GoogleFonts.ubuntu(
-                color: Colors.white,
-                fontSize: 17,
-              ),
-            ),
-          ),
-        )
       ],
     );
   }
 
-  Widget showErrorMessage() {
-    if (_errorMessage.length > 0 && _errorMessage != null) {
-      return new Text(
-        _errorMessage,
-        style: TextStyle(
-            fontSize: 13.0,
-            color: Colors.red,
-            height: 1.0,
-            fontWeight: FontWeight.w300),
-      );
-    } else {
-      return new Container(
-        height: 0.0,
-      );
-    }
+  Widget googleButton() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 17.0),
+      child: FlatButton.icon(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(7.0),
+        ),
+        padding: EdgeInsets.all(15.0),
+        color: Colors.deepPurple,
+        onPressed: () async {
+          setState(() {
+            _errorMessage = "";
+            _isLoading = false;
+          });
+          try {
+            setState(() {
+              _isLoading = true;
+            });
+            String userId = await widget.auth.googleSignIn();
+            setState(() {
+              _isLoading = false;
+            });
+            if (userId.length > 0 && userId != null && _isLoginForm) {
+              widget.loginCallback();
+            }
+          } catch (e) {
+            setState(() {
+              _isLoading = false;
+              _errorMessage = e.message;
+            });
+            _showErrorMessageAlert();
+          }
+        },
+        icon: Icon(
+          FontAwesomeIcons.google,
+          color: Colors.white,
+          size: 25.0,
+        ),
+        label: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Text(
+            'sign in with google'.toUpperCase(),
+            style: GoogleFonts.ubuntu(
+              color: Colors.white,
+              fontSize: 17,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget showFirstNameInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-      child: new TextFormField(
+      child: TextFormField(
         maxLines: 1,
         keyboardType: TextInputType.text,
         autofocus: false,
-        decoration: new InputDecoration(
+        decoration: textInputDecoration.copyWith(
             hintText: 'First Name',
-            icon: new Icon(
-              Icons.mail,
-              color: Colors.grey,
+            prefixIcon: Icon(
+              Icons.person,
             )),
         validator: (value) => value.isEmpty ? 'Name can\'t be empty' : null,
         onSaved: (value) => _firstName = value.trim(),
+        onChanged: (value) => _firstName = value.trim(),
       ),
     );
   }
@@ -249,18 +261,15 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Widget showLastNameInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-      child: new TextFormField(
+      child: TextFormField(
         maxLines: 1,
         keyboardType: TextInputType.text,
         autofocus: false,
-        decoration: new InputDecoration(
-            hintText: 'Last Name',
-            icon: new Icon(
-              Icons.mail,
-              color: Colors.grey,
-            )),
+        decoration: textInputDecoration.copyWith(
+            hintText: 'Last Name', prefixIcon: Icon(Icons.person)),
         validator: (value) => value.isEmpty ? 'Name can\'t be empty' : null,
         onSaved: (value) => _lastName = value.trim(),
+        onChanged: (value) => _lastName = value.trim(),
       ),
     );
   }
@@ -268,16 +277,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Widget showEmailInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-      child: new TextFormField(
+      child: TextFormField(
         maxLines: 1,
         keyboardType: TextInputType.emailAddress,
         autofocus: false,
-        decoration: new InputDecoration(
-            hintText: 'Email',
-            icon: new Icon(
-              Icons.mail,
-              color: Colors.grey,
-            )),
+        decoration: textInputDecoration.copyWith(
+            hintText: 'Email', prefixIcon: Icon(Icons.alternate_email)),
         validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
         onSaved: (value) => _email = value.trim(),
       ),
@@ -287,44 +292,75 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Widget showPasswordInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-      child: new TextFormField(
+      child: TextFormField(
         maxLines: 1,
         obscureText: true,
         autofocus: false,
-        decoration: new InputDecoration(
-            hintText: 'Password',
-            icon: new Icon(
-              Icons.lock,
-              color: Colors.grey,
-            )),
-        validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
+        decoration: textInputDecoration.copyWith(
+            hintText: 'Password', prefixIcon: Icon(Icons.lock)),
+        validator: (value) {
+          if (value.isEmpty) {
+            return 'Password can\'t be empty';
+          } else if (value.trim().length < 6) {
+            return 'Length of Password can\'t be less than 6 characters';
+          } else {
+            return null;
+          }
+        },
         onSaved: (value) => _password = value.trim(),
       ),
     );
   }
 
   Widget showSecondaryButton() {
-    return new FlatButton(
-        child: new Text(
-            _isLoginForm ? 'Create an account' : 'Have an account? Sign in',
-            style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
+    return FlatButton(
+        child: Text(
+            _isLoginForm
+                ? 'Create an account'.toUpperCase()
+                : 'Have an account? Sign in'.toUpperCase(),
+            style: GoogleFonts.ubuntu(
+                fontSize: 18.0, fontWeight: FontWeight.w300)),
         onPressed: toggleFormMode);
   }
 
   Widget showPrimaryButton() {
-    return new Padding(
+    return Padding(
         padding: EdgeInsets.fromLTRB(0.0, 45.0, 0.0, 0.0),
         child: SizedBox(
           height: 40.0,
-          child: new RaisedButton(
+          child: RaisedButton(
             elevation: 5.0,
-            shape: new RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(30.0)),
-            color: Colors.blue,
-            child: new Text(_isLoginForm ? 'Login' : 'Create account',
-                style: new TextStyle(fontSize: 20.0, color: Colors.white)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0)),
+            color: Theme.of(context).primaryColor,
+            child: Text(
+              _isLoginForm ? 'Login' : 'Create account',
+              style: GoogleFonts.ubuntu(
+                  fontSize: 20.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700),
+            ),
             onPressed: validateAndSubmit,
           ),
         ));
+  }
+
+  void _showErrorMessageAlert() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text(_errorMessage),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    'Fix It',
+                    style: GoogleFonts.ubuntu(),
+                  ))
+            ],
+          );
+        });
   }
 }
