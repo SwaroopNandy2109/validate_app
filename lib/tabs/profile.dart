@@ -6,6 +6,12 @@ import 'package:validatedapp/constants/textStyle.dart';
 import 'package:validatedapp/services/auth.dart';
 
 class ProfilePage extends StatefulWidget {
+
+  ProfilePage({this.auth, this.logoutCallback});
+
+  final VoidCallback logoutCallback;
+  final BaseAuth auth;
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -96,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 setState(() {
                   loading = true;
                 });
-                await AuthService().signOut();
+                await signOut();
               },
               icon: Icon(Icons.exit_to_app),
               label: Text(
@@ -108,5 +114,14 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  signOut() async {
+    try {
+      await widget.auth.signOut();
+      widget.logoutCallback();
+    } catch (e) {
+      print(e);
+    }
   }
 }

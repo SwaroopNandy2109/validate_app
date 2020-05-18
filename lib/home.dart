@@ -1,10 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:validatedapp/services/auth.dart';
 import 'package:validatedapp/tabs/post_page.dart';
 import 'package:validatedapp/tabs/profile.dart';
 
 class HomePage extends StatefulWidget {
+
+  HomePage({Key key, this.auth, this.userId, this.logoutCallback})
+      : super(key: key);
+
+  final BaseAuth auth;
+  final VoidCallback logoutCallback;
+  final String userId;
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -14,10 +23,77 @@ class _HomePageState extends State<HomePage> {
   bool isTabTwoSelected = false;
   PageController controller;
 
+  bool _isEmailVerified = false;
+
   @override
   void initState() {
     super.initState();
     controller = PageController();
+
+    _checkEmailVerification();
+
+  }
+
+  void _checkEmailVerification() async {
+    _isEmailVerified = await widget.auth.isEmailVerified();
+    if (!_isEmailVerified) {
+      _showVerifyEmailDialog();
+    }
+  }
+
+    void _resentVerifyEmail(){
+    widget.auth.sendEmailVerification();
+    _showVerifyEmailSentDialog();
+  }
+
+    void _showVerifyEmailDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Verify your account"),
+          content: new Text("Please verify account in the link sent to email"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Resend link"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _resentVerifyEmail();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Dismiss"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showVerifyEmailSentDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Verify your account"),
+          content:
+              new Text("Link to verify account has been sent to your email"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Dismiss"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -28,7 +104,7 @@ class _HomePageState extends State<HomePage> {
           controller: controller,
           children: <Widget>[
             PostPage(),
-            ProfilePage(),
+            ProfilePage(auth: widget.auth, logoutCallback: widget.logoutCallback,),
           ],
         ),
         floatingActionButton: Container(
