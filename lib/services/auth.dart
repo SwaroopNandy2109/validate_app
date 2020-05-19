@@ -5,7 +5,7 @@ import 'package:validatedapp/models/user.dart';
 abstract class BaseAuth {
   Future<String> signInWithEmail(String email, String password);
 
-  Future<String> regWithEmail(String email, String password);
+  Future<String> regWithEmail(String email, String password, String name);
 
   Future<FirebaseUser> getCurrentUser();
 
@@ -57,13 +57,18 @@ class AuthService implements BaseAuth {
         email: email, password: password);
     FirebaseUser user = result.user;
     _userFromFirebaseUser(user);
+    print("Login: " + user.displayName);
     return user.uid;
   }
 
-  Future<String> regWithEmail(String email, String password) async {
+  Future<String> regWithEmail(
+      String email, String password, String name) async {
+    UserUpdateInfo _updateInfo = UserUpdateInfo();
     AuthResult result = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
     FirebaseUser user = result.user;
+    _updateInfo.displayName = name;
+    user.updateProfile(_updateInfo);
     _userFromFirebaseUser(user);
     return user.uid;
   }
@@ -81,5 +86,9 @@ class AuthService implements BaseAuth {
   Future<bool> isEmailVerified() async {
     FirebaseUser user = await _auth.currentUser();
     return user.isEmailVerified;
+  }
+
+  Stream<FirebaseUser> get currentUser {
+    return _auth.currentUser().asStream();
   }
 }

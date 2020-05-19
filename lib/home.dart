@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:validatedapp/services/auth.dart';
 import 'package:validatedapp/tabs/post_page.dart';
@@ -144,36 +145,36 @@ class _HomePageState extends State<HomePage> {
                                 radius: 35,
                                 backgroundColor: Theme.of(context).primaryColor,
                                 child: Icon(
-                                  Icons.link,
+                                  FontAwesomeIcons.paperclip,
                                   color: Colors.white,
-                                  size: 28,
+                                  size: 25,
                                 ),
                               ),
                               CircleAvatar(
                                 backgroundColor: Theme.of(context).primaryColor,
                                 radius: 35,
                                 child: Icon(
-                                  Icons.textsms,
+                                  FontAwesomeIcons.penAlt,
                                   color: Colors.white,
-                                  size: 28,
+                                  size: 25,
                                 ),
                               ),
                               CircleAvatar(
                                 backgroundColor: Theme.of(context).primaryColor,
                                 radius: 35,
                                 child: Icon(
-                                  Icons.video_call,
+                                  FontAwesomeIcons.video,
                                   color: Colors.white,
-                                  size: 32,
+                                  size: 25,
                                 ),
                               ),
                               CircleAvatar(
                                 backgroundColor: Theme.of(context).primaryColor,
                                 radius: 35,
                                 child: Icon(
-                                  Icons.add_a_photo,
+                                  FontAwesomeIcons.image,
                                   color: Colors.white,
-                                  size: 28,
+                                  size: 25,
                                 ),
                               ),
                             ],
@@ -229,8 +230,8 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
                 IconButton(
-                  iconSize: 30.0,
-                  icon: Icon(Icons.person,
+                  iconSize: 25.0,
+                  icon: Icon(FontAwesomeIcons.userAlt,
                       color: isTabTwoSelected
                           ? Theme.of(context).primaryColor
                           : Colors.grey),

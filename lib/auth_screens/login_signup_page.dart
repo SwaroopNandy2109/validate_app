@@ -17,6 +17,7 @@ class LoginSignupPage extends StatefulWidget {
 
 class _LoginSignupPageState extends State<LoginSignupPage> {
   final _formKey = GlobalKey<FormState>();
+  FocusNode _focus = FocusNode();
 
   String _email;
   String _password;
@@ -26,6 +27,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   bool _isLoginForm;
   bool _isLoading;
+  bool _obscureText = true;
+  bool _isFocused = false;
 
   // Check if form is valid before perform login or signup
   bool validateAndSave() {
@@ -51,7 +54,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           userId = await widget.auth.signInWithEmail(_email, _password);
           print('Signed in: $userId');
         } else {
-          userId = await widget.auth.regWithEmail(_email, _password);
+          userId = await widget.auth
+              .regWithEmail(_email, _password, _firstName + " " + _lastName);
           widget.auth.sendEmailVerification();
           _showVerifyEmailSentDialog();
           print('Signed up user: $userId');
@@ -82,7 +86,15 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     _errorMessage = "";
     _isLoading = false;
     _isLoginForm = true;
+    _isFocused = false;
+    _focus.addListener(_onFocusChange);
     super.initState();
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = _focus.hasFocus;
+    });
   }
 
   void resetForm() {
@@ -137,9 +149,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   List<Widget> _toggleForm() {
     List<Widget> widgetList = [];
+    widgetList.add(FlutterLogo(
+      size: 80,
+    ));
     if (_isLoginForm) {
       widgetList.add(SizedBox(
-        height: MediaQuery.of(context).size.height * 0.1,
+        height: 35,
       ));
       widgetList.add(showEmailInput());
       widgetList.add(showPasswordInput());
@@ -156,6 +171,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         height: MediaQuery.of(context).size.height * 0.05,
       ));
     } else {
+      widgetList.add(SizedBox(
+        height: 20,
+      ));
       widgetList.add(showFirstNameInput());
       widgetList.add(showLastNameInput());
       widgetList.add(showEmailInput());
@@ -242,18 +260,26 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Widget showFirstNameInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-      child: TextFormField(
-        maxLines: 1,
-        keyboardType: TextInputType.text,
-        autofocus: false,
-        decoration: textInputDecoration.copyWith(
-            hintText: 'First Name',
-            prefixIcon: Icon(
-              Icons.person,
-            )),
-        validator: (value) => value.isEmpty ? 'Name can\'t be empty' : null,
-        onSaved: (value) => _firstName = value.trim(),
-        onChanged: (value) => _firstName = value.trim(),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _isFocused = false;
+          });
+        },
+        child: TextFormField(
+          style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold, fontSize: 18),
+          maxLines: 1,
+          keyboardType: TextInputType.text,
+          autofocus: false,
+          decoration: textInputDecoration.copyWith(
+              labelText: 'First Name',
+              prefixIcon: Icon(
+                Icons.person,
+              )),
+          validator: (value) => value.isEmpty ? 'Name can\'t be empty' : null,
+          onSaved: (value) => _firstName = value.trim(),
+          onChanged: (value) => _firstName = value.trim(),
+        ),
       ),
     );
   }
@@ -261,15 +287,23 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Widget showLastNameInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-      child: TextFormField(
-        maxLines: 1,
-        keyboardType: TextInputType.text,
-        autofocus: false,
-        decoration: textInputDecoration.copyWith(
-            hintText: 'Last Name', prefixIcon: Icon(Icons.person)),
-        validator: (value) => value.isEmpty ? 'Name can\'t be empty' : null,
-        onSaved: (value) => _lastName = value.trim(),
-        onChanged: (value) => _lastName = value.trim(),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _isFocused = false;
+          });
+        },
+        child: TextFormField(
+          style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold, fontSize: 18),
+          maxLines: 1,
+          keyboardType: TextInputType.text,
+          autofocus: false,
+          decoration: textInputDecoration.copyWith(
+              labelText: 'Last Name', prefixIcon: Icon(Icons.person)),
+          validator: (value) => value.isEmpty ? 'Name can\'t be empty' : null,
+          onSaved: (value) => _lastName = value.trim(),
+          onChanged: (value) => _lastName = value.trim(),
+        ),
       ),
     );
   }
@@ -277,14 +311,22 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Widget showEmailInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
-      child: TextFormField(
-        maxLines: 1,
-        keyboardType: TextInputType.emailAddress,
-        autofocus: false,
-        decoration: textInputDecoration.copyWith(
-            hintText: 'Email', prefixIcon: Icon(Icons.alternate_email)),
-        validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
-        onSaved: (value) => _email = value.trim(),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _isFocused = false;
+          });
+        },
+        child: TextFormField(
+          style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold, fontSize: 18),
+          maxLines: 1,
+          keyboardType: TextInputType.emailAddress,
+          autofocus: false,
+          decoration: textInputDecoration.copyWith(
+              labelText: 'Email', prefixIcon: Icon(Icons.alternate_email)),
+          validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
+          onSaved: (value) => _email = value.trim(),
+        ),
       ),
     );
   }
@@ -293,11 +335,27 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
       child: TextFormField(
+        style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold, fontSize: 18),
+        focusNode: _focus,
         maxLines: 1,
-        obscureText: true,
+        obscureText: _obscureText,
         autofocus: false,
         decoration: textInputDecoration.copyWith(
-            hintText: 'Password', prefixIcon: Icon(Icons.lock)),
+          labelText: 'Password',
+          prefixIcon: Icon(Icons.lock),
+          suffixIcon: _isFocused
+              ? GestureDetector(
+                  child: Icon(_obscureText
+                      ? FontAwesomeIcons.eyeSlash
+                      : FontAwesomeIcons.eye,size: 18.5,),
+                  onTap: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                )
+              : null,
+        ),
         validator: (value) {
           if (value.isEmpty) {
             return 'Password can\'t be empty';
