@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -162,11 +163,11 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       widgetList.add(SizedBox(
         height: 25,
       ));
-      widgetList.add(showSecondaryButton());
+      widgetList.add(googleButton());
       widgetList.add(SizedBox(
         height: 25,
       ));
-      widgetList.add(googleButton());
+      widgetList.add(showSecondaryButton());
       widgetList.add(SizedBox(
         height: MediaQuery.of(context).size.height * 0.05,
       ));
@@ -345,9 +346,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           prefixIcon: Icon(Icons.lock),
           suffixIcon: _isFocused
               ? GestureDetector(
-                  child: Icon(_obscureText
-                      ? FontAwesomeIcons.eyeSlash
-                      : FontAwesomeIcons.eye,size: 18.5,),
+                  child: Icon(
+                    _obscureText
+                        ? FontAwesomeIcons.eyeSlash
+                        : FontAwesomeIcons.eye,
+                    size: 18.5,
+                  ),
                   onTap: () {
                     setState(() {
                       _obscureText = !_obscureText;
@@ -371,28 +375,31 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   }
 
   Widget showSecondaryButton() {
-    return FlatButton(
+    return Center(
+      child: GestureDetector(
         child: Text(
             _isLoginForm
-                ? 'Create an account'.toUpperCase()
-                : 'Have an account? Sign in'.toUpperCase(),
+                ? 'Create an Account'.toUpperCase()
+                : 'Have an Account? Sign in'.toUpperCase(),
             style: GoogleFonts.ubuntu(
                 fontSize: 18.0, fontWeight: FontWeight.w300)),
-        onPressed: toggleFormMode);
+        onTap: toggleFormMode,
+      ),
+    );
   }
 
   Widget showPrimaryButton() {
     return Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 45.0, 0.0, 0.0),
-        child: SizedBox(
-          height: 40.0,
-          child: RaisedButton(
-            elevation: 5.0,
+        padding: EdgeInsets.fromLTRB(0.0, 40.0, 0.0, 0.0),
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 18),
+          height: 50.0,
+          child: FlatButton(
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0)),
+                borderRadius: BorderRadius.circular(10.0)),
             color: Theme.of(context).primaryColor,
             child: Text(
-              _isLoginForm ? 'Login' : 'Create account',
+              _isLoginForm ? 'Login' : 'Create Account',
               style: GoogleFonts.ubuntu(
                   fontSize: 20.0,
                   color: Colors.white,

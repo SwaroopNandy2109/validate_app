@@ -22,16 +22,19 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
             ),
             onPressed: () {
               showModalBottomSheet(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15.0),
-                    topRight: Radius.circular(15.0),
-                  ),
-                ),
+                backgroundColor: Colors.transparent,
                 context: context,
                 builder: (BuildContext context) {
                   return Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10),
                     height: MediaQuery.of(context).size.height * 0.5,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        topRight: Radius.circular(10.0),
+                      ),
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
@@ -52,6 +55,8 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
       ),
     );
   }
+
+  void showCategoryModal(context) {}
 
   Widget dropdownOption(String title) {
     return ListTile(

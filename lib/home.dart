@@ -174,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                                 child: Icon(
                                   FontAwesomeIcons.image,
                                   color: Colors.white,
-                                  size: 25,
+                                  size: 28,
                                 ),
                               ),
                             ],

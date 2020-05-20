@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:validatedapp/models/user.dart';
+import 'package:validatedapp/services/database.dart';
 
 abstract class BaseAuth {
   Future<String> signInWithEmail(String email, String password);
@@ -42,8 +43,8 @@ class AuthService implements BaseAuth {
 
     final FirebaseUser user =
         (await _auth.signInWithCredential(credential)).user;
-//      await DatabaseService(uid: user.uid)
-//          .updateUserData(user.displayName, user.photoUrl, user.email);
+    await DatabaseService(uid: user.uid)
+        .addUserData(user.displayName, user.photoUrl);
     _userFromFirebaseUser(user);
     return user.uid;
   }
@@ -70,6 +71,8 @@ class AuthService implements BaseAuth {
     _updateInfo.displayName = name;
     user.updateProfile(_updateInfo);
     _userFromFirebaseUser(user);
+    await DatabaseService(uid: user.uid).addUserData(name,
+        'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png');
     return user.uid;
   }
 
