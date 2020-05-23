@@ -16,7 +16,11 @@ class DatabaseService {
         'upVotedPosts': [],
         'downVotedPosts': [],
       },
-      merge: false,
     );
   }
+
+  Future updateProfilePhoto(String photoUrl) async {
+    userCollection.document(uid).setData({'photoUrl': photoUrl});
+  }
+
 }

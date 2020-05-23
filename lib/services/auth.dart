@@ -14,6 +14,8 @@ abstract class BaseAuth {
 
   Future<void> signOut();
 
+  Future<String> updateProfilePhoto(String photoUrl);
+
   Future<bool> isEmailVerified();
 
   Future<String> googleSignIn();
@@ -91,7 +93,20 @@ class AuthService implements BaseAuth {
     return user.isEmailVerified;
   }
 
-  Stream<FirebaseUser> get currentUser {
-    return _auth.currentUser().asStream();
+  Stream<User> get currentUser {
+    return _auth.currentUser().asStream().map(_userFromFirebaseUser);
+  }
+
+  Future<String> updateProfilePhoto(String photoUrl) async {
+
+    UserUpdateInfo _updateInfo = UserUpdateInfo();
+    _updateInfo.photoUrl = photoUrl;
+    FirebaseUser user = await getCurrentUser();
+
+    user.updateProfile(_updateInfo);
+
+    _userFromFirebaseUser(user);
+    print(user.uid);
+    return user.uid;
   }
 }
