@@ -16,6 +16,8 @@ abstract class BaseAuth {
 
   Future<String> updateProfilePhoto(String photoUrl);
 
+  Future<String> updateUsername(String name);
+
   Future<bool> isEmailVerified();
 
   Future<String> googleSignIn();
@@ -30,7 +32,7 @@ class AuthService implements BaseAuth {
   }
 
   User _userFromFirebaseUser(FirebaseUser user) {
-    return user != null ? User(uid: user.uid) : null;
+    return user != null ? User(uid: user.uid, email: user.email) : null;
   }
 
   Future<String> googleSignIn() async {
@@ -109,4 +111,18 @@ class AuthService implements BaseAuth {
     print(user.uid);
     return user.uid;
   }
+
+  Future<String> updateUsername(String name) async {
+
+    UserUpdateInfo _updateInfo = UserUpdateInfo();
+    _updateInfo.photoUrl = name;
+    FirebaseUser user = await getCurrentUser();
+
+    user.updateProfile(_updateInfo);
+
+    _userFromFirebaseUser(user);
+    print(user.uid);
+    return user.uid;
+  }
+
 }

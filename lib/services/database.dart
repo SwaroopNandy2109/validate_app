@@ -20,7 +20,12 @@ class DatabaseService {
   }
 
   Future updateProfilePhoto(String photoUrl) async {
-    userCollection.document(uid).setData({'photoUrl': photoUrl});
+    userCollection.document(uid).updateData({'photoUrl': photoUrl});
   }
+
+  Future updateUsername(String name) async {
+    userCollection.document(uid).updateData({'username': name});
+  }
+
 
 }

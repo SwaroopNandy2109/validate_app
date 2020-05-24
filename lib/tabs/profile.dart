@@ -8,22 +8,22 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image/image.dart' as Im;
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:validatedapp/constants/loading_widget.dart';
 import 'package:validatedapp/constants/textStyle.dart';
+import 'package:validatedapp/models/user.dart';
 import 'package:validatedapp/services/auth.dart';
 import 'package:validatedapp/services/database.dart';
-import 'package:validatedapp/models/user.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({this.auth, this.logoutCallback});
 
   final VoidCallback logoutCallback;
   final BaseAuth auth;
-
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -33,13 +33,10 @@ class _ProfilePageState extends State<ProfilePage> {
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final StorageReference storageRef = FirebaseStorage.instance.ref();
 
-
-
   bool loading = false;
   File file;
   String postId = Uuid().v4();
-
-
+  String name;
 
   @override
   void initState() {
@@ -47,24 +44,29 @@ class _ProfilePageState extends State<ProfilePage> {
     file = null;
   }
 
-  handleTakePhoto() async {
+  getPhoto(ImageSource source) async {
     Navigator.pop(context);
-    File file = await ImagePicker.pickImage(
-      source: ImageSource.camera,
-      maxHeight: 675,
-      maxWidth: 960,
-    );
-    setState(() {
-      this.file = file;
-    });
-  }
+    File image = await ImagePicker.pickImage(source: source);
+    print("Just before cropper");
+    if (image != null) {
+      print("Inside cropper");
+      File cropped = await ImageCropper.cropImage(
+        sourcePath: image.path,
+        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+        compressQuality: 100,
+        compressFormat: ImageCompressFormat.jpg,
+        androidUiSettings: AndroidUiSettings(
+          toolbarColor: Colors.deepPurple,
+          toolbarTitle: "Crop Profile Photo",
+          statusBarColor: Colors.deepPurple[600],
+          backgroundColor: Colors.white,
+        ),
+      );
 
-  handleChooseFromGallery() async {
-    Navigator.pop(context);
-    File file = await ImagePicker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      this.file = file;
-    });
+      setState(() {
+        this.file = cropped;
+      });
+    }
   }
 
   selectImage(parentContext) {
@@ -77,12 +79,11 @@ class _ProfilePageState extends State<ProfilePage> {
             SimpleDialogOption(
                 child: Text("Photo with Camera"),
                 onPressed: () async {
-
-                  await handleTakePhoto();
+                  await getPhoto(ImageSource.camera);
                   setState(() {
-                    loading=true;
+                    loading = true;
                   });
-                  await handleSubmit();
+                  await handleImageSubmit();
                   setState(() {
                     loading = false;
                   });
@@ -90,12 +91,11 @@ class _ProfilePageState extends State<ProfilePage> {
             SimpleDialogOption(
                 child: Text("Image from Gallery"),
                 onPressed: () async {
-
-                  await handleChooseFromGallery();
+                  await getPhoto(ImageSource.gallery);
                   setState(() {
-                    loading=true;
+                    loading = true;
                   });
-                  await handleSubmit();
+                  await handleImageSubmit();
                   setState(() {
                     loading = false;
                   });
@@ -109,7 +109,6 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
-
 
   compressImage() async {
     final tempDir = await getTemporaryDirectory();
@@ -130,9 +129,9 @@ class _ProfilePageState extends State<ProfilePage> {
     return downloadUrl;
   }
 
-  handleSubmit() async {
+  handleImageSubmit() async {
     setState(() {
-      loading=true;
+      loading = true;
     });
     print("before compress");
     await compressImage();
@@ -147,106 +146,56 @@ class _ProfilePageState extends State<ProfilePage> {
       file = null;
       postId = Uuid().v4();
       loading = false;
-
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
+  changeUsername(parentContext, name) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Change Username"),
+            content: TextFormField(
+              style:
+                  GoogleFonts.ubuntu(fontWeight: FontWeight.bold, fontSize: 18),
+              maxLines: 1,
+              keyboardType: TextInputType.text,
+              decoration: textInputDecoration.copyWith(
+                  labelText: '$name', prefixIcon: Icon(Icons.person)),
+              validator: (value) =>
+                  value.isEmpty ? 'Name can\'t be empty' : null,
+              onSaved: (value) => name = value.trim(),
+              onChanged: (value) => name = value.trim(),
+            ),
+            actions: <Widget>[
+              MaterialButton(
+                elevation: 5.0,
+                child: Text("Update"),
+                onPressed: () => {
+                  handleNameSubmit(),
+                  Navigator.pop(context),
+                },
+              ),
+              MaterialButton(
+                elevation: 5.0,
+                child: Text("Cancel"),
+                onPressed: () => {Navigator.pop(context)},
+              )
+            ],
+          );
+        });
+  }
 
-    final user = Provider.of <User>(context);
+  handleNameSubmit() async {
+    setState(() {
+      loading = true;
+    });
+    String uid = await widget.auth.updateUsername(name);
+    DatabaseService(uid: uid).updateUsername(name);
 
-    return loading
-        ? Loading()
-        : StreamBuilder<DocumentSnapshot>(
-            stream: Firestore.instance.collection('Users').document(user.uid).snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                DocumentSnapshot user = snapshot.data;
-                print(user['photoUrl']);
-                return Scaffold(
-                  appBar: AppBar(
-                    title: Text(
-                      'Profile',
-                      style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
-                    ),
-                    centerTitle: true,
-                  ),
-                  body: Padding(
-                    padding: EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 0.0),
-                    child: Column(
-                      children: <Widget>[
-                        Center(
-                          child: GestureDetector(
-                            onTap: () => {selectImage(context)},
-                            child: CircleAvatar(
-                              backgroundImage: user['photoUrl'] == null
-                                  ? CachedNetworkImageProvider(
-                                      'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png')
-                                  : CachedNetworkImageProvider(user['photoUrl']),
-                              backgroundColor: Colors.grey[400],
-                              radius: 70,
-                            ),
-                          ),
-                        ),
-                        Divider(
-                          height: 60.0,
-                          color: Colors.white,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Icon(Icons.person),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              "${user['username']}",
-                              style: styleText,
-                            ),
-                          ],
-                        ),
-                        Divider(
-                          height: 30.0,
-                          color: Colors.white,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Icon(Icons.email),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              "TEST EMAIL",
-                              style: styleText,
-                            ),
-                          ],
-                        ),
-                        Divider(
-                          height: 30.0,
-                          color: Colors.white,
-                        ),
-                        FlatButton.icon(
-                          onPressed: () async {
-                            setState(() {
-                              loading = true;
-                            });
-                            await signOut();
-                          },
-                          icon: Icon(Icons.exit_to_app),
-                          label: Text(
-                            'Logout'.toUpperCase(),
-                            style: GoogleFonts.ubuntu(),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              } else
-                return Loading();
-            });
+    setState(() {
+      loading = false;
+    });
   }
 
   signOut() async {
@@ -255,6 +204,137 @@ class _ProfilePageState extends State<ProfilePage> {
       widget.logoutCallback();
     } catch (e) {
       print(e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
+
+    if (user == null) {
+      return Loading();
+    } else {
+      return loading
+          ? Loading()
+          : StreamBuilder<DocumentSnapshot>(
+              stream: Firestore.instance
+                  .collection('Users')
+                  .document(user.uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  DocumentSnapshot userSnapshot = snapshot.data;
+                  print(userSnapshot['photoUrl']);
+                  return Scaffold(
+                    appBar: AppBar(
+                      title: Text(
+                        'Profile',
+                        style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+                      ),
+                      centerTitle: true,
+                    ),
+                    body: Padding(
+                      padding: EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 0.0),
+                      child: Column(
+                        children: <Widget>[
+                          Center(
+                            child: GestureDetector(
+                              onTap: () => {selectImage(context)},
+                              child: Stack(children: <Widget>[
+                                  CircleAvatar(
+                                    backgroundImage: userSnapshot['photoUrl'] ==
+                                            null
+                                        ? CachedNetworkImageProvider(
+                                            'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png')
+                                        : CachedNetworkImageProvider(
+                                            userSnapshot['photoUrl']),
+                                    backgroundColor: Colors.grey[400],
+                                    radius: 70,
+                                  ),
+                                Positioned(
+                                  bottom: 10,
+                                  right: 10,
+                                  child: GestureDetector(
+                                    child: CircleAvatar(
+                                      radius: 15,
+                                      child: Icon(
+                                        Icons.edit,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                            ),
+                          ),
+                          Divider(
+                            height: 60.0,
+                            color: Colors.white,
+                          ),
+                          GestureDetector(
+                            onTap: () => {
+                              changeUsername(context, userSnapshot['username'])
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(Icons.person),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Text(
+                                  "${userSnapshot['username']}",
+                                  style: styleText,
+                                ),
+                                Spacer(flex: 1,),
+                                Icon(
+                                  Icons.edit,
+                                  size: 20,
+                                )
+                              ],
+                            ),
+                          ),
+                          Divider(
+                            height: 30.0,
+                            color: Colors.white,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Icon(Icons.email),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Text(
+                                "${user.email}",
+                                style: styleText,
+                              ),
+                            ],
+                          ),
+                          Divider(
+                            height: 30.0,
+                            color: Colors.white,
+                          ),
+                          FlatButton.icon(
+                            onPressed: () async {
+                              setState(() {
+                                loading = true;
+                              });
+                              await signOut();
+                            },
+                            icon: Icon(Icons.exit_to_app),
+                            label: Text(
+                              'Logout'.toUpperCase(),
+                              style: GoogleFonts.ubuntu(),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                } else
+                  return Loading();
+              });
     }
   }
 }

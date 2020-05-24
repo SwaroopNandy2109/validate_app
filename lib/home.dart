@@ -1,11 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:validatedapp/models/user.dart';
 import 'package:validatedapp/services/auth.dart';
 import 'package:validatedapp/tabs/post_page.dart';
 import 'package:validatedapp/tabs/profile.dart';
-import 'package:validatedapp/models/user.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.auth, this.userId, this.logoutCallback})
@@ -31,6 +32,12 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     controller = PageController();
     _checkEmailVerification();
+    getUser();
+  }
+
+  void getUser() async {
+    FirebaseUser user = await AuthService().getCurrentUser();
+    print(user.email);
   }
 
   void _checkEmailVerification() async {
