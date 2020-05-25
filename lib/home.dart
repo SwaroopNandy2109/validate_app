@@ -6,6 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:validatedapp/models/user.dart';
 import 'package:validatedapp/services/auth.dart';
+import 'package:validatedapp/tabs/AddPostPages/imagepost.dart';
+import 'package:validatedapp/tabs/AddPostPages/linkpost.dart';
+import 'package:validatedapp/tabs/AddPostPages/textpost.dart';
 import 'package:validatedapp/tabs/post_page.dart';
 import 'package:validatedapp/tabs/profile.dart';
 
@@ -134,7 +137,10 @@ class _HomePageState extends State<HomePage> {
           physics: NeverScrollableScrollPhysics(),
           controller: controller,
           children: <Widget>[
-            PostPage(),
+            StreamProvider<User>.value(
+              child: PostPage(),
+              value: AuthService().currentUser,
+            ),
             StreamProvider<User>.value(
               value: AuthService().currentUser,
               child: ProfilePage(
@@ -178,42 +184,78 @@ class _HomePageState extends State<HomePage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: <Widget>[
-                              CircleAvatar(
-                                radius: 35,
-                                backgroundColor: Theme.of(context).primaryColor,
-                                child: Icon(
-                                  FontAwesomeIcons.paperclip,
-                                  color: Colors.white,
-                                  size: 25,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              LinkPostPage()));
+                                },
+                                child: CircleAvatar(
+                                  radius: 35,
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  child: Icon(
+                                    FontAwesomeIcons.paperclip,
+                                    color: Colors.white,
+                                    size: 25,
+                                  ),
                                 ),
                               ),
-                              CircleAvatar(
-                                backgroundColor: Theme.of(context).primaryColor,
-                                radius: 35,
-                                child: Icon(
-                                  FontAwesomeIcons.penAlt,
-                                  color: Colors.white,
-                                  size: 25,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              TextPostPage()));
+                                },
+                                child: CircleAvatar(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  radius: 35,
+                                  child: Icon(
+                                    FontAwesomeIcons.penAlt,
+                                    color: Colors.white,
+                                    size: 25,
+                                  ),
                                 ),
                               ),
-                              CircleAvatar(
-                                backgroundColor: Theme.of(context).primaryColor,
-                                radius: 35,
-                                child: Icon(
-                                  FontAwesomeIcons.video,
-                                  color: Colors.white,
-                                  size: 25,
+                              GestureDetector(
+                                child: CircleAvatar(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  radius: 35,
+                                  child: Icon(
+                                    FontAwesomeIcons.video,
+                                    color: Colors.white,
+                                    size: 25,
+                                  ),
                                 ),
                               ),
-                              CircleAvatar(
-                                backgroundColor: Theme.of(context).primaryColor,
-                                radius: 35,
-                                child: Icon(
-                                  FontAwesomeIcons.image,
-                                  color: Colors.white,
-                                  size: 28,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ImagePostPage()));
+                                },
+                                child: CircleAvatar(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  radius: 35,
+                                  child: Icon(
+                                    FontAwesomeIcons.image,
+                                    color: Colors.white,
+                                    size: 28,
+                                  ),
                                 ),
-                              ),
+                              )
                             ],
                           ),
                           GestureDetector(

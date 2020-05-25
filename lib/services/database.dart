@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class DatabaseService {
   String uid;
@@ -27,5 +28,21 @@ class DatabaseService {
     userCollection.document(uid).updateData({'username': name});
   }
 
-
+  addPost() async {
+    try {
+      final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+        functionName: 'addPost',
+      );
+      await callable.call(<String, dynamic>{
+        "title": "New Post from app",
+        "description": "Adding a new post from app 2",
+        "category": "Sports",
+        "type": "Link",
+        "mediaUrl": "Not Present",
+        "link": "https://www.google.com"
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 }
