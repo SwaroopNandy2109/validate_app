@@ -217,9 +217,7 @@ class _HomePageState extends State<HomePage> {
                                 },
                                 child: CircleAvatar(
                                   backgroundColor:
-                                  Theme
-                                      .of(context)
-                                      .primaryColor,
+                                      Theme.of(context).primaryColor,
                                   radius: 35,
                                   child: Icon(
                                     FontAwesomeIcons.penAlt,

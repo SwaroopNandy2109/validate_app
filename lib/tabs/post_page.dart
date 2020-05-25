@@ -15,8 +15,10 @@ class _PostPageState extends State<PostPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Posts',style: GoogleFonts.ubuntu(
-              fontWeight: FontWeight.bold),),
+          title: Text(
+            'Posts',
+            style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+          ),
           centerTitle: true,
           bottom: TabBar(isScrollable: true, tabs: <Widget>[
             Tab(

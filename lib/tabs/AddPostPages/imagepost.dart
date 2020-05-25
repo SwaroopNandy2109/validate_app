@@ -197,6 +197,7 @@ class _ImagePostPageState extends State<ImagePostPage> {
                       child: Center(
                         child: Container(
                           decoration: BoxDecoration(
+                            color: Colors.grey[200],
                             image: DecorationImage(
                               fit: BoxFit.contain,
                               image: FileImage(file),
