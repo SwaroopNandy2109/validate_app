@@ -21,39 +21,41 @@ class _HomeBarPageState extends State<HomeBarPage> {
             categoryChoice,
             style: GoogleFonts.ubuntu(fontSize: 17),
           ),
-          onPressed: () {
-            showModalBottomSheet(
-              backgroundColor: Colors.transparent,
-              context: context,
-              builder: (BuildContext context) {
-                return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 10),
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      topRight: Radius.circular(10.0),
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      dropdownOption('All'),
-                      dropdownOption('Politics'),
-                      dropdownOption('Sports'),
-                      dropdownOption('Economy'),
-                      dropdownOption('Business'),
-                      dropdownOption('Entertainment'),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
+          onPressed: () => showCategoryModal(context),
         ),
       ],
     ));
+  }
+
+  showCategoryModal(parentContext) {
+    return showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: parentContext,
+      builder: (context) {
+        return Container(
+          margin: EdgeInsets.symmetric(horizontal: 10),
+          height: MediaQuery.of(context).size.height * 0.5,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10.0),
+              topRight: Radius.circular(10.0),
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              dropdownOption('All'),
+              dropdownOption('Politics'),
+              dropdownOption('Sports'),
+              dropdownOption('Economy'),
+              dropdownOption('Business'),
+              dropdownOption('Entertainment'),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget dropdownOption(String title) {

@@ -32,11 +32,12 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final StorageReference storageRef = FirebaseStorage.instance.ref();
+  final _formKey = GlobalKey<FormState>();
 
   bool loading = false;
   File file;
   String postId = Uuid().v4();
-  String name;
+  String name = '';
 
   @override
   void initState() {
@@ -47,9 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
   getPhoto(ImageSource source) async {
     Navigator.pop(context);
     File image = await ImagePicker.pickImage(source: source);
-    print("Just before cropper");
     if (image != null) {
-      print("Inside cropper");
       File cropped = await ImageCropper.cropImage(
         sourcePath: image.path,
         aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
@@ -74,10 +73,18 @@ class _ProfilePageState extends State<ProfilePage> {
       context: parentContext,
       builder: (context) {
         return SimpleDialog(
-          title: Text("Change Profile Picture"),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          title: Text(
+            "Change Profile Picture",
+            style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+          ),
           children: <Widget>[
             SimpleDialogOption(
-                child: Text("Photo with Camera"),
+                child: Text(
+                  "Photo with Camera",
+                  style: GoogleFonts.ubuntu(),
+                ),
                 onPressed: () async {
                   await getPhoto(ImageSource.camera);
                   setState(() {
@@ -89,7 +96,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   });
                 }),
             SimpleDialogOption(
-                child: Text("Image from Gallery"),
+                child: Text(
+                  "Image from Gallery",
+                  style: GoogleFonts.ubuntu(),
+                ),
                 onPressed: () async {
                   await getPhoto(ImageSource.gallery);
                   setState(() {
@@ -101,7 +111,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   });
                 }),
             SimpleDialogOption(
-              child: Text("Cancel"),
+              child: Text(
+                "Cancel",
+                style: GoogleFonts.ubuntu(),
+              ),
               onPressed: () => Navigator.pop(context),
             )
           ],
@@ -133,9 +146,7 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       loading = true;
     });
-    print("before compress");
     await compressImage();
-    print("after compress");
     String mediaUrl = await uploadImage(file);
 
     String uid = await widget.auth.updateProfilePhoto(mediaUrl);
@@ -149,36 +160,50 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  changeUsername(parentContext, name) {
+  changeUsername(parentContext, username) {
     return showDialog(
         context: parentContext,
         builder: (context) {
           return AlertDialog(
-            title: Text("Change Username"),
-            content: TextFormField(
-              style:
-                  GoogleFonts.ubuntu(fontWeight: FontWeight.bold, fontSize: 18),
-              maxLines: 1,
-              keyboardType: TextInputType.text,
-              decoration: textInputDecoration.copyWith(
-                  labelText: '$name', prefixIcon: Icon(Icons.person)),
-              validator: (value) =>
-                  value.isEmpty ? 'Name can\'t be empty' : null,
-              onSaved: (value) => name = value.trim(),
-              onChanged: (value) => name = value.trim(),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            title: Text(
+              "Change Username",
+              style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+            ),
+            content: Form(
+              key: _formKey,
+              child: TextFormField(
+                initialValue: username,
+                style: GoogleFonts.ubuntu(
+                    fontWeight: FontWeight.bold, fontSize: 18),
+                maxLines: 1,
+                keyboardType: TextInputType.text,
+                decoration: textInputDecoration.copyWith(
+                    labelText: 'Username', prefixIcon: Icon(Icons.person)),
+                validator: (value) =>
+                    value.isEmpty ? 'Name can\'t be empty' : null,
+                onSaved: (value) => name = value.trim(),
+              ),
             ),
             actions: <Widget>[
               MaterialButton(
                 elevation: 5.0,
-                child: Text("Update"),
+                child: Text(
+                  "Update",
+                  style: GoogleFonts.ubuntu(),
+                ),
                 onPressed: () => {
-                  handleNameSubmit(),
-                  Navigator.pop(context),
+                  if (validateAndSave() == true)
+                    {handleNameSubmit(username), Navigator.pop(context)}
                 },
               ),
               MaterialButton(
                 elevation: 5.0,
-                child: Text("Cancel"),
+                child: Text(
+                  "Cancel",
+                  style: GoogleFonts.ubuntu(),
+                ),
                 onPressed: () => {Navigator.pop(context)},
               )
             ],
@@ -186,16 +211,29 @@ class _ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  handleNameSubmit() async {
-    setState(() {
-      loading = true;
-    });
-    String uid = await widget.auth.updateUsername(name);
-    DatabaseService(uid: uid).updateUsername(name);
+  bool validateAndSave() {
+    final form = _formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      return true;
+    }
+    return false;
+  }
 
-    setState(() {
-      loading = false;
-    });
+  handleNameSubmit(username) async {
+    if (validateAndSave()) {
+      setState(() {
+        loading = true;
+      });
+      String uid = await widget.auth
+          .updateUsername(name.isEmpty || name == "" ? username : name);
+      DatabaseService(uid: uid)
+          .updateUsername(name.isEmpty || name == "" ? username : name);
+      setState(() {
+        _formKey.currentState.reset();
+        loading = false;
+      });
+    }
   }
 
   signOut() async {
@@ -224,7 +262,6 @@ class _ProfilePageState extends State<ProfilePage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   DocumentSnapshot userSnapshot = snapshot.data;
-                  print(userSnapshot['photoUrl']);
                   return Scaffold(
                     appBar: AppBar(
                       title: Text(
@@ -239,27 +276,31 @@ class _ProfilePageState extends State<ProfilePage> {
                         children: <Widget>[
                           Center(
                             child: GestureDetector(
-                              onTap: () => {selectImage(context)},
+                              onTap: () => selectImage(context),
                               child: Stack(children: <Widget>[
-                                  CircleAvatar(
-                                    backgroundImage: userSnapshot['photoUrl'] ==
-                                            null
-                                        ? CachedNetworkImageProvider(
-                                            'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png')
-                                        : CachedNetworkImageProvider(
-                                            userSnapshot['photoUrl']),
-                                    backgroundColor: Colors.grey[400],
-                                    radius: 70,
-                                  ),
+                                CircleAvatar(
+                                  backgroundImage: userSnapshot['photoUrl'] ==
+                                          null
+                                      ? CachedNetworkImageProvider(
+                                          'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png')
+                                      : CachedNetworkImageProvider(
+                                          userSnapshot['photoUrl']),
+                                  backgroundColor: Colors.grey[400],
+                                  radius: 70,
+                                ),
                                 Positioned(
                                   bottom: 10,
                                   right: 10,
-                                  child: GestureDetector(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white),
+                                    padding: EdgeInsets.all(2.0),
                                     child: CircleAvatar(
-                                      radius: 15,
+                                      radius: 10,
                                       child: Icon(
                                         Icons.edit,
-                                        size: 20,
+                                        size: 12,
                                       ),
                                     ),
                                   ),
@@ -286,7 +327,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   "${userSnapshot['username']}",
                                   style: styleText,
                                 ),
-                                Spacer(flex: 1,),
+                                Spacer(
+                                  flex: 1,
+                                ),
                                 Icon(
                                   Icons.edit,
                                   size: 20,

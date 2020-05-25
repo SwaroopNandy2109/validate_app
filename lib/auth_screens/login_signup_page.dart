@@ -132,11 +132,22 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: Text("Verify your account"),
-          content: Text("Link to verify account has been sent to your email"),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          title: Text(
+            "Verify your account",
+            style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+          ),
+          content: Text(
+            "Link to verify account has been sent to your email",
+            style: GoogleFonts.ubuntu(),
+          ),
           actions: <Widget>[
             FlatButton(
-              child: Text("Dismiss"),
+              child: Text(
+                "Dismiss",
+                style: GoogleFonts.ubuntu(),
+              ),
               onPressed: () {
                 toggleFormMode();
                 Navigator.of(context).pop();
@@ -415,6 +426,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
             title: Text('Error'),
             content: Text(_errorMessage),
             actions: <Widget>[

@@ -100,7 +100,6 @@ class AuthService implements BaseAuth {
   }
 
   Future<String> updateProfilePhoto(String photoUrl) async {
-
     UserUpdateInfo _updateInfo = UserUpdateInfo();
     _updateInfo.photoUrl = photoUrl;
     FirebaseUser user = await getCurrentUser();
@@ -113,16 +112,13 @@ class AuthService implements BaseAuth {
   }
 
   Future<String> updateUsername(String name) async {
-
     UserUpdateInfo _updateInfo = UserUpdateInfo();
-    _updateInfo.photoUrl = name;
+    _updateInfo.displayName = name;
     FirebaseUser user = await getCurrentUser();
 
     user.updateProfile(_updateInfo);
 
     _userFromFirebaseUser(user);
-    print(user.uid);
     return user.uid;
   }
-
 }

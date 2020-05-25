@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -58,18 +59,32 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Verify your account"),
-          content: new Text("Please verify account in the link sent to email"),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          title: new Text(
+            "Verify your account",
+            style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+          ),
+          content: new Text(
+            "Please verify account in the link sent to email",
+            style: GoogleFonts.ubuntu(),
+          ),
           actions: <Widget>[
             new FlatButton(
-              child: new Text("Resend link"),
+              child: new Text(
+                "Resend link",
+                style: GoogleFonts.ubuntu(),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 _resentVerifyEmail();
               },
             ),
             new FlatButton(
-              child: new Text("Dismiss"),
+              child: new Text(
+                "Dismiss",
+                style: GoogleFonts.ubuntu(),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -86,12 +101,22 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Verify your account"),
-          content:
-              new Text("Link to verify account has been sent to your email"),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          title: new Text(
+            "Verify your account",
+            style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+          ),
+          content: new Text(
+            "Link to verify account has been sent to your email",
+            style: GoogleFonts.ubuntu(),
+          ),
           actions: <Widget>[
             new FlatButton(
-              child: new Text("Dismiss"),
+              child: new Text(
+                "Dismiss",
+                style: GoogleFonts.ubuntu(),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
