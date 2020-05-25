@@ -11,7 +11,7 @@ class _LinkPostPageState extends State<LinkPostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Post a Link!'),
+        title: Text('Link Post'),
       ),
     );
   }

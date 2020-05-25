@@ -156,6 +156,8 @@ class _HomePageState extends State<HomePage> {
           child: FittedBox(
             child: FloatingActionButton(
               onPressed: () {
+                _checkEmailVerification();
+
                 showModalBottomSheet(
                   backgroundColor: Colors.transparent,
                   context: context,
@@ -215,7 +217,9 @@ class _HomePageState extends State<HomePage> {
                                 },
                                 child: CircleAvatar(
                                   backgroundColor:
-                                      Theme.of(context).primaryColor,
+                                  Theme
+                                      .of(context)
+                                      .primaryColor,
                                   radius: 35,
                                   child: Icon(
                                     FontAwesomeIcons.penAlt,
@@ -227,7 +231,9 @@ class _HomePageState extends State<HomePage> {
                               GestureDetector(
                                 child: CircleAvatar(
                                   backgroundColor:
-                                      Theme.of(context).primaryColor,
+                                  Theme
+                                      .of(context)
+                                      .primaryColor,
                                   radius: 35,
                                   child: Icon(
                                     FontAwesomeIcons.video,
@@ -247,7 +253,9 @@ class _HomePageState extends State<HomePage> {
                                 },
                                 child: CircleAvatar(
                                   backgroundColor:
-                                      Theme.of(context).primaryColor,
+                                  Theme
+                                      .of(context)
+                                      .primaryColor,
                                   radius: 35,
                                   child: Icon(
                                     FontAwesomeIcons.image,

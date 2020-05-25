@@ -42,14 +42,14 @@ class _ImagePostPageState extends State<ImagePostPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Upload'.toUpperCase(),
+          'Add Post',
           style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
         ),
         actions: <Widget>[
           FlatButton(
               onPressed: isUploading ? null : () => validateAndSubmit(),
               child: Text(
-                'POST',
+                'Post',
                 style: GoogleFonts.ubuntu(
                     fontWeight: FontWeight.bold,
                     color: isUploading ? Colors.white30 : Colors.white,
@@ -145,6 +145,11 @@ class _ImagePostPageState extends State<ImagePostPage> {
                       color: Colors.red[400],
                     )
                   : Text(""),
+              (file != null)
+                  ? SizedBox(
+                      height: 20,
+                    )
+                  : Text(""),
               file == null
                   ? Column(
                       children: <Widget>[
@@ -190,14 +195,11 @@ class _ImagePostPageState extends State<ImagePostPage> {
                       height: 220.0,
                       width: MediaQuery.of(context).size.width * 0.8,
                       child: Center(
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: FileImage(file),
-                              ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              fit: BoxFit.contain,
+                              image: FileImage(file),
                             ),
                           ),
                         ),
@@ -222,7 +224,13 @@ class _ImagePostPageState extends State<ImagePostPage> {
     if (image != null) {
       File cropped = await ImageCropper.cropImage(
         sourcePath: image.path,
-        aspectRatio: CropAspectRatio(ratioX: 16, ratioY: 9),
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9,
+        ],
         compressQuality: 100,
         compressFormat: ImageCompressFormat.jpg,
         androidUiSettings: AndroidUiSettings(
