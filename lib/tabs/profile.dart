@@ -236,6 +236,39 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  showLogoutConfDialog(parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            title: Text(
+              'Confirm Logout',
+              style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+            ),
+            content: Text(
+              'Are you sure you want to Logout?',
+              style: GoogleFonts.ubuntu(),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    setState(() {
+                      loading = true;
+                    });
+                    await signOut();
+                  },
+                  child: Text('Yes', style: GoogleFonts.ubuntu())),
+              FlatButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Cancel', style: GoogleFonts.ubuntu())),
+            ],
+          );
+        });
+  }
+
   signOut() async {
     try {
       await widget.auth.signOut();
@@ -359,16 +392,17 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Colors.white,
                           ),
                           FlatButton.icon(
-                            onPressed: () async {
-                              setState(() {
-                                loading = true;
-                              });
-                              await signOut();
-                            },
-                            icon: Icon(Icons.exit_to_app),
+                            onPressed: () => showLogoutConfDialog(context),
+                            icon: Icon(
+                              Icons.exit_to_app,
+                              color: Colors.red,
+                            ),
                             label: Text(
                               'Logout'.toUpperCase(),
-                              style: GoogleFonts.ubuntu(),
+                              style: GoogleFonts.ubuntu(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20),
                             ),
                           )
                         ],
