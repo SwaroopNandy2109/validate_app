@@ -1,15 +1,14 @@
 import 'dart:io';
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image/image.dart' as Im;
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:validatedapp/constants/shared.dart';
 import 'package:uuid/uuid.dart';
+import 'package:validatedapp/constants/shared.dart';
 
 class ImagePostPage extends StatefulWidget {
   @override
@@ -232,7 +231,7 @@ class _ImagePostPageState extends State<ImagePostPage> {
           CropAspectRatioPreset.ratio4x3,
           CropAspectRatioPreset.ratio16x9,
         ],
-        compressQuality: 100,
+        compressQuality: 75,
         compressFormat: ImageCompressFormat.jpg,
         androidUiSettings: AndroidUiSettings(
           toolbarColor: Colors.deepPurple,
@@ -248,22 +247,13 @@ class _ImagePostPageState extends State<ImagePostPage> {
     }
   }
 
-  compressImage() async {
-    final tempDir = await getTemporaryDirectory();
-    final path = tempDir.path;
-    Im.Image imageFile = Im.decodeImage(file.readAsBytesSync());
-    final compressedImageFile = File('$path/img_$postId.jpg')
-      ..writeAsBytesSync(Im.encodeJpg(imageFile, quality: 85));
-    setState(() {
-      file = compressedImageFile;
-    });
-  }
-
   Future<String> uploadImage(imageFile) async {
     StorageUploadTask uploadTask =
         storageRef.child("post_$postId.jpg").putFile(imageFile);
     StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
     String downloadUrl = await storageSnap.ref.getDownloadURL();
+    downloadUrl.replaceAll('.jpg', '_400x400.jpg');
+    print(downloadUrl);
     return downloadUrl;
   }
 
@@ -271,7 +261,7 @@ class _ImagePostPageState extends State<ImagePostPage> {
     setState(() {
       isUploading = true;
     });
-    await compressImage();
+
     String mediaUrl = await uploadImage(file);
     CloudFunctions.instance
         .getHttpsCallable(functionName: 'addPost')
