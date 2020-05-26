@@ -1,5 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -195,61 +196,75 @@ class _LinkPostPageState extends State<LinkPostPage> {
     if (data == null) {
       return Container();
     } else {
-      return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          color: Colors.purple[100],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: <Widget>[
-              Image.network(
-                data['image'],
-                height: 50,
-                width: 50,
-                fit: BoxFit.cover,
-              ),
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        data['title'],
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black),
-                      ),
-                      SizedBox(
-                        height: 4,
-                      ),
-                      Text(
-                        data['description'],
-                      ),
-                      SizedBox(
-                        height: 4,
-                      ),
-                      Row(
-                        children: <Widget>[
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Container(
-                            child: Text(link,
-                                style: TextStyle(
-                                    color: Colors.grey, fontSize: 12)),
-                          ),
-                        ],
-                      ),
-                    ],
+      if (data['error'] != null) {
+        return Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            color: Colors.purple[100],
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Text("Invalid URL"),
+          ),
+        );
+      } else {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            color: Colors.purple[100],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: <Widget>[
+                Image.network(
+                  data['image'],
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                ),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          data['title'],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          data['description'],
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Row(
+                          children: <Widget>[
+                            SizedBox(
+                              width: 4,
+                            ),
+                            Container(
+                              child: Text(link,
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
   }
 }

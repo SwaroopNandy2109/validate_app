@@ -35,6 +35,7 @@ class FetchPreview {
         'description': description ?? '',
         'image': image ?? '',
         'url': url ?? '',
+        'error': error ?? '',
       };
     } catch (e) {
       print("Error caught: $e");
