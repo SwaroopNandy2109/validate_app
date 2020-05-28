@@ -10,6 +10,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:validatedapp/constants/shared.dart';
 
+import '../../home.dart';
+
 class ImagePostPage extends StatefulWidget {
   @override
   _ImagePostPageState createState() => _ImagePostPageState();
@@ -40,6 +42,10 @@ class _ImagePostPageState extends State<ImagePostPage> {
   buildUploadForm() {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => HomePage()))),
         title: Text(
           'Add Post',
           style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
@@ -215,7 +221,8 @@ class _ImagePostPageState extends State<ImagePostPage> {
   validateAndSubmit() async {
     if (_formKey.currentState.validate() && file != null) {
       await handleSubmit();
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     }
   }
 
@@ -263,7 +270,7 @@ class _ImagePostPageState extends State<ImagePostPage> {
     });
 
     String mediaUrl = await uploadImage(file);
-    CloudFunctions.instance
+    await CloudFunctions.instance
         .getHttpsCallable(functionName: 'addPost')
         .call(<String, dynamic>{
       "title": title,

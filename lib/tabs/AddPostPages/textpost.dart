@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
 import 'package:validatedapp/constants/shared.dart';
+import 'package:validatedapp/home.dart';
 
 class TextPostPage extends StatefulWidget {
   @override
@@ -35,6 +36,11 @@ class _TextPostPageState extends State<TextPostPage> {
   buildUploadForm() {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => HomePage())),
+        ),
         title: Text(
           'Add Post',
           style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
@@ -124,7 +130,8 @@ class _TextPostPageState extends State<TextPostPage> {
   validateAndSubmit() async {
     if (_formKey.currentState.validate()) {
       await handleSubmit();
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     }
   }
 
@@ -133,7 +140,7 @@ class _TextPostPageState extends State<TextPostPage> {
       isUploading = true;
     });
 
-    CloudFunctions.instance
+    await CloudFunctions.instance
         .getHttpsCallable(functionName: 'addPost')
         .call(<String, dynamic>{
       "title": title,
@@ -143,6 +150,7 @@ class _TextPostPageState extends State<TextPostPage> {
       "mediaUrl": "",
       "link": "",
     });
+
     setState(() {
       isUploading = false;
       postId = Uuid().v4();

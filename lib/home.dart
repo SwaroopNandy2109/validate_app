@@ -189,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                               GestureDetector(
                                 onTap: () {
                                   Navigator.pop(context);
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
@@ -209,7 +209,7 @@ class _HomePageState extends State<HomePage> {
                               GestureDetector(
                                 onTap: () {
                                   Navigator.pop(context);
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
@@ -229,9 +229,7 @@ class _HomePageState extends State<HomePage> {
                               GestureDetector(
                                 child: CircleAvatar(
                                   backgroundColor:
-                                  Theme
-                                      .of(context)
-                                      .primaryColor,
+                                      Theme.of(context).primaryColor,
                                   radius: 35,
                                   child: Icon(
                                     FontAwesomeIcons.video,
@@ -243,7 +241,7 @@ class _HomePageState extends State<HomePage> {
                               GestureDetector(
                                 onTap: () {
                                   Navigator.pop(context);
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
@@ -251,9 +249,7 @@ class _HomePageState extends State<HomePage> {
                                 },
                                 child: CircleAvatar(
                                   backgroundColor:
-                                  Theme
-                                      .of(context)
-                                      .primaryColor,
+                                      Theme.of(context).primaryColor,
                                   radius: 35,
                                   child: Icon(
                                     FontAwesomeIcons.image,

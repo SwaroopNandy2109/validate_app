@@ -8,6 +8,8 @@ import 'package:uuid/uuid.dart';
 import 'package:validatedapp/constants/shared.dart';
 import 'package:validatedapp/services/fetch_preview.dart';
 
+import '../../home.dart';
+
 class LinkPostPage extends StatefulWidget {
   @override
   _LinkPostPageState createState() => _LinkPostPageState();
@@ -49,6 +51,11 @@ class _LinkPostPageState extends State<LinkPostPage> {
   buildUploadForm() {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => HomePage())),
+        ),
         title: Text(
           'Add Post',
           style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
@@ -167,7 +174,8 @@ class _LinkPostPageState extends State<LinkPostPage> {
   validateAndSubmit() async {
     if (_formKey.currentState.validate()) {
       await handleSubmit();
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     }
   }
 
@@ -176,7 +184,7 @@ class _LinkPostPageState extends State<LinkPostPage> {
       isUploading = true;
     });
 
-    CloudFunctions.instance
+    await CloudFunctions.instance
         .getHttpsCallable(functionName: 'addPost')
         .call(<String, dynamic>{
       "title": title,
