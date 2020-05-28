@@ -9,8 +9,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:validatedapp/constants/shared.dart';
-
-import '../../home.dart';
+import 'package:validatedapp/home.dart';
 
 class ImagePostPage extends StatefulWidget {
   @override
@@ -43,9 +42,12 @@ class _ImagePostPageState extends State<ImagePostPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => HomePage()))),
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => HomePage()));
+          },
+        ),
         title: Text(
           'Add Post',
           style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
@@ -259,7 +261,8 @@ class _ImagePostPageState extends State<ImagePostPage> {
         storageRef.child("post_$postId.jpg").putFile(imageFile);
     StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
     String downloadUrl = await storageSnap.ref.getDownloadURL();
-    downloadUrl.replaceAll('.jpg', '_400x400.jpg');
+    print(downloadUrl);
+    downloadUrl = downloadUrl.replaceAll('.jpg', '_640x640.jpg');
     print(downloadUrl);
     return downloadUrl;
   }
