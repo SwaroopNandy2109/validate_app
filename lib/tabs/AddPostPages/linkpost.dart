@@ -53,8 +53,10 @@ class _LinkPostPageState extends State<LinkPostPage> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => HomePage())),
+          onPressed: () {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => HomePage()));
+          },
         ),
         title: Text(
           'Add Post',

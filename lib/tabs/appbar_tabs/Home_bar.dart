@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:validatedapp/constants/post_container.dart';
 import 'package:validatedapp/services/postsbloc.dart';
 
 class HomeBarPage extends StatefulWidget {
@@ -18,6 +19,7 @@ class _HomeBarPageState extends State<HomeBarPage> {
   void initState() {
     super.initState();
     postlistbloc = PostsBloc();
+    postlistbloc.fetchFirstList();
     controller.addListener(_scrollListener);
   }
 
@@ -38,16 +40,20 @@ class _HomeBarPageState extends State<HomeBarPage> {
         builder: (context, snapshot) {
           if (snapshot.data != null) {
             return ListView.builder(
-              itemCount: snapshot.data.length,
+              itemCount: snapshot.data.length + 1,
               itemBuilder: (context, index) {
+                if (index == snapshot.data.length) {
+                  return CupertinoActivityIndicator();
+                }
                 return Card(
                   child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: ListTile(
-                      leading: Text(snapshot.data[index]["description"]),
-                      trailing: Text(snapshot.data[index]["title"]),
-                    ),
-                  ),
+                      padding: EdgeInsets.all(8.0),
+                      child: postContainer(
+                          "https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png",
+                          "userName",
+                          snapshot.data[index]["category"],
+                          snapshot.data[index]["title"],
+                          snapshot.data[index]["description"])),
                 );
               },
             );
