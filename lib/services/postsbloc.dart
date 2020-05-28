@@ -32,7 +32,6 @@ class PostsBloc {
         if (documentList.length == 0) {
           postController.sink.addError("No Data Available");
         }
-        return documentList;
       } catch (e) {}
     } on SocketException {
       postController.sink.addError(SocketException("No Internet Connection"));
@@ -54,7 +53,6 @@ class PostsBloc {
         if (documentList.length == 0) {
           postController.sink.addError("No Data Available");
           updateIndicator(false);
-          return newDocumentList;
         }
       } catch (e) {
         updateIndicator(false);
