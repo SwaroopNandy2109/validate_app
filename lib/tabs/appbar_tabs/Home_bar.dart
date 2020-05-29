@@ -14,62 +14,68 @@ class _HomeBarPageState extends State<HomeBarPage> {
   String categoryChoice = 'All';
   PostsBloc postlistbloc;
   ScrollController controller = ScrollController();
+  bool loading = true;
 
   @override
   void initState() {
     super.initState();
     postlistbloc = PostsBloc();
-    postlistbloc.fetchFirstList();
     controller.addListener(_scrollListener);
   }
 
-//  FlatButton.icon(
-//  icon: Icon(Icons.arrow_drop_down),
-//  label: Text(
-//  categoryChoice,
-//  style: GoogleFonts.ubuntu(fontSize: 17),
-//  ),
-//  onPressed: () => showCategoryModal(context),
-//  ),
-
   @override
   Widget build(BuildContext context) {
+    postlistbloc.fetchFirstList();
     return Scaffold(
-      body: StreamBuilder<List<DocumentSnapshot>>(
-        stream: postlistbloc.postStream,
-        builder: (context, snapshot) {
-          if (snapshot.data != null) {
-            return ListView.builder(
-              itemCount: snapshot.data.length + 1,
-              itemBuilder: (context, index) {
-                if (index == snapshot.data.length) {
-                  return CupertinoActivityIndicator();
-                }
-                return Card(
-                  child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: postContainer(
-                          "https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png",
-                          "userName",
-                          snapshot.data[index]["category"],
-                          snapshot.data[index]["title"],
-                          snapshot.data[index]["description"])),
-                );
-              },
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                '${snapshot.error}',
-                style: GoogleFonts.ubuntu(fontSize: 28),
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Container(
+              alignment: Alignment.topLeft,
+              child: FlatButton.icon(
+                icon: Icon(Icons.arrow_drop_down),
+                label: Text(
+                  categoryChoice,
+                  style: GoogleFonts.ubuntu(fontSize: 17),
+                ),
+                onPressed: () => showCategoryModal(context),
               ),
-            );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+            ),
+            StreamBuilder<List<DocumentSnapshot>>(
+              stream: postlistbloc.postStream,
+              builder: (context, snapshot) {
+                if (snapshot.data != null) {
+                  return Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length + 1,
+                      controller: controller,
+                      itemBuilder: (context, index) {
+                        if (index >= snapshot.data.length) {
+                          return CupertinoActivityIndicator();
+                        }
+                        return PostCard(doc: snapshot.data[index]);
+                      },
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      '${snapshot.error}',
+                      style: GoogleFonts.ubuntu(fontSize: 28),
+                    ),
+                  );
+                } else {
+                  return Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -77,7 +83,6 @@ class _HomeBarPageState extends State<HomeBarPage> {
   void _scrollListener() async {
     if (controller.offset >= controller.position.maxScrollExtent &&
         !controller.position.outOfRange) {
-      print("at the end of list");
       postlistbloc.fetchNextPosts();
     }
   }

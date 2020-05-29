@@ -39,10 +39,10 @@ class DatabaseService {
   Future<List<DocumentSnapshot>> fetchNextList(
       List<DocumentSnapshot> documentList) async {
     return (await Firestore.instance
-            .collection("Posts")
-            .orderBy("timestamp", descending: true)
-            .startAfterDocument(documentList[documentList.length - 1])
-            .limit(10)
+        .collection("Posts")
+        .orderBy("timestamp", descending: true)
+        .startAfterDocument(documentList[documentList.length - 1])
+        .limit(10)
         .getDocuments())
         .documents;
   }

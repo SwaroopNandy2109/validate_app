@@ -82,7 +82,6 @@ class AuthService implements BaseAuth {
 
   Future<FirebaseUser> getCurrentUser() async {
     FirebaseUser user = await _auth.currentUser();
-    print("Inside getCurrentUser " + user.photoUrl);
     return user;
   }
 

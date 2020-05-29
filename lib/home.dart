@@ -45,10 +45,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _checkEmailVerification() async {
-    _isEmailVerified = await widget.auth.isEmailVerified();
-    if (!_isEmailVerified) {
-      _showVerifyEmailDialog();
-    }
+    try {
+      _isEmailVerified = await widget.auth.isEmailVerified();
+      if (!_isEmailVerified) {
+        _showVerifyEmailDialog();
+      }
+    } catch (e) {}
   }
 
   void _resentVerifyEmail() {

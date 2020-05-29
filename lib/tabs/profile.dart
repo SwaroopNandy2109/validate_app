@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -305,9 +306,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             CircleAvatar(
                               backgroundImage: userSnapshot['photoUrl'] ==
                                   null
-                                  ? NetworkImage(
+                                  ? CachedNetworkImageProvider(
                                   'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png')
-                                  : NetworkImage(userSnapshot['photoUrl']),
+                                  : CachedNetworkImageProvider(userSnapshot['photoUrl']),
                               backgroundColor: Colors.grey[400],
                               radius: 70,
                             ),
