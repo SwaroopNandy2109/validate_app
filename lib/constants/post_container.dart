@@ -65,13 +65,10 @@ class PostCard extends StatelessWidget {
                   Spacer(),
                   Row(
                     children: <Widget>[
-                      Text(
-                        doc["category"].toUpperCase(),
-                        style: GoogleFonts.ubuntu(
-                            fontSize: 16, fontStyle: FontStyle.italic),
-                      ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showOptions(context);
+                        },
                         icon: Icon(
                           Icons.more_vert,
                           size: 35,
@@ -165,4 +162,45 @@ class PostCard extends StatelessWidget {
       ),
     );
   }
+
+  showOptions(parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            title: Text(
+              "Options",
+              style: GoogleFonts.ubuntu(
+                  fontWeight: FontWeight.bold),
+            ),
+            children: <Widget>[
+              SimpleDialogOption(
+                child: Text(
+                  "Report",
+                  style: GoogleFonts.ubuntu(),
+                ),
+                onPressed: () {},
+              ),
+              SimpleDialogOption(
+                child: Text(
+                  "Delete",
+                  style: GoogleFonts.ubuntu(),
+                ),
+                onPressed: () {},
+              ),
+              SimpleDialogOption(
+                child: Text(
+                  "Cancel",
+                  style: GoogleFonts.ubuntu(),
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        }
+    );
+  }
+
 }

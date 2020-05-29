@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:validatedapp/constants/post_container.dart';
-import 'package:validatedapp/services/postsbloc.dart';
 
 class HomeBarPage extends StatefulWidget {
   @override
@@ -11,21 +10,31 @@ class HomeBarPage extends StatefulWidget {
 }
 
 class _HomeBarPageState extends State<HomeBarPage> {
+  Firestore firestore = Firestore.instance;
   String categoryChoice = 'All';
-  PostsBloc postlistbloc;
-  ScrollController controller = ScrollController();
-  bool loading = true;
+
+  List<DocumentSnapshot> posts = [];
+  bool isLoading = false;
+  bool hasMore = true;
+  int documentLimit = 10;
+  DocumentSnapshot lastDocument;
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    postlistbloc = PostsBloc();
-    controller.addListener(_scrollListener);
+    _scrollController.addListener(() {
+      double maxScroll = _scrollController.position.maxScrollExtent;
+      double currentScroll = _scrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.height * 0.20;
+      if (maxScroll - currentScroll <= delta) {
+        getProducts();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    postlistbloc.fetchFirstList();
     return Scaffold(
       body: Container(
         child: Column(
@@ -41,50 +50,77 @@ class _HomeBarPageState extends State<HomeBarPage> {
                 onPressed: () => showCategoryModal(context),
               ),
             ),
-            StreamBuilder<List<DocumentSnapshot>>(
-              stream: postlistbloc.postStream,
-              builder: (context, snapshot) {
-                if (snapshot.data != null) {
-                  return Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: snapshot.data.length + 1,
-                      controller: controller,
-                      itemBuilder: (context, index) {
-                        if (index >= snapshot.data.length) {
-                          return CupertinoActivityIndicator();
-                        }
-                        return PostCard(doc: snapshot.data[index]);
-                      },
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      '${snapshot.error}',
-                      style: GoogleFonts.ubuntu(fontSize: 28),
-                    ),
-                  );
-                } else {
-                  return Expanded(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-              },
+            Expanded(
+              child: posts.length == 0
+                  ? Center(
+                child: Text('No Data...'),
+              )
+                  : ListView.builder(
+                controller: _scrollController,
+                itemCount: posts.length,
+                itemBuilder: (context, index) {
+                  return PostCard(doc: posts[index]);
+                },
+              ),
             ),
+            isLoading
+                ? Container(
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              padding: EdgeInsets.all(5),
+              color: Colors.yellowAccent,
+              child: Text(
+                'Loading',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
+                : Container()
           ],
         ),
       ),
     );
   }
 
-  void _scrollListener() async {
-    if (controller.offset >= controller.position.maxScrollExtent &&
-        !controller.position.outOfRange) {
-      postlistbloc.fetchNextPosts();
+  getProducts() async {
+    if (!hasMore) {
+      print('No More Products');
+      return;
     }
+    if (isLoading) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+    QuerySnapshot querySnapshot;
+    if (lastDocument == null) {
+      querySnapshot = await firestore
+          .collection('Posts')
+          .orderBy("timestamp", descending: true)
+          .limit(documentLimit)
+          .getDocuments();
+    } else {
+      querySnapshot = await firestore
+          .collection('Posts')
+          .orderBy("timestamp", descending: true)
+          .startAfterDocument(lastDocument)
+          .limit(documentLimit)
+          .getDocuments();
+      print(1);
+    }
+    if (querySnapshot.documents.length < documentLimit) {
+      hasMore = false;
+    }
+    lastDocument = querySnapshot.documents[querySnapshot.documents.length - 1];
+    posts.addAll(querySnapshot.documents);
+    setState(() {
+      isLoading = false;
+    });
   }
 
   showCategoryModal(parentContext) {
@@ -128,10 +164,10 @@ class _HomeBarPageState extends State<HomeBarPage> {
       ),
       trailing: title == categoryChoice
           ? Icon(
-              Icons.done,
-              color: Colors.green,
-              size: 28.0,
-            )
+        Icons.done,
+        color: Colors.green,
+        size: 28.0,
+      )
           : null,
       onTap: () {
         setState(() {
