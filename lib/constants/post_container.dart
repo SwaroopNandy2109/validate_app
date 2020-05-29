@@ -12,8 +12,9 @@ import 'package:validatedapp/models/user.dart';
 
 class PostCard extends StatelessWidget {
   final DocumentSnapshot doc;
+  final Function deletePost;
 
-  PostCard({this.doc});
+  PostCard({this.doc, this.deletePost});
 
   final String dummyPhotoUrl =
       'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png';
@@ -67,7 +68,7 @@ class PostCard extends StatelessWidget {
                     children: <Widget>[
                       IconButton(
                         onPressed: () {
-                          showOptions(context);
+                          showOptions(context, doc["author"], user.uid);
                         },
                         icon: Icon(
                           Icons.more_vert,
@@ -147,14 +148,6 @@ class PostCard extends StatelessWidget {
                         },
                       ),
                     ),
-                    SizedBox(width: 25),
-                    InkWell(
-                      onTap: () {}, //implement modal here
-                      child: Text(
-                        'Preview',
-                        style: GoogleFonts.ubuntu(fontSize: 20),
-                      ),
-                    )
                   ],
                 )
               : Text("")
@@ -163,7 +156,7 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  showOptions(parentContext) {
+  showOptions(parentContext, String authorUid, String userUid) {
     return showDialog(
         context: parentContext,
         builder: (context) {
@@ -172,24 +165,27 @@ class PostCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10.0)),
             title: Text(
               "Options",
-              style: GoogleFonts.ubuntu(
-                  fontWeight: FontWeight.bold),
+              style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
             ),
             children: <Widget>[
-              SimpleDialogOption(
-                child: Text(
-                  "Report",
-                  style: GoogleFonts.ubuntu(),
-                ),
-                onPressed: () {},
-              ),
-              SimpleDialogOption(
-                child: Text(
-                  "Delete",
-                  style: GoogleFonts.ubuntu(),
-                ),
-                onPressed: () {},
-              ),
+              authorUid != userUid
+                  ? SimpleDialogOption(
+                      child: Text(
+                        "Report",
+                        style: GoogleFonts.ubuntu(),
+                      ),
+                      onPressed: () {},
+                    )
+                  : SimpleDialogOption(
+                      child: Text(
+                        "Delete",
+                        style: GoogleFonts.ubuntu(),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        deletePost();
+                      },
+                    ),
               SimpleDialogOption(
                 child: Text(
                   "Cancel",
@@ -199,8 +195,6 @@ class PostCard extends StatelessWidget {
               ),
             ],
           );
-        }
-    );
+        });
   }
-
 }

@@ -6,7 +6,10 @@ class DatabaseService {
   DatabaseService({this.uid});
 
   final CollectionReference userCollection =
-  Firestore.instance.collection('Users');
+      Firestore.instance.collection('Users');
+
+  final CollectionReference postCollection =
+      Firestore.instance.collection('Posts');
 
   Future addUserData(String name, String photoUrl) async {
     return await userCollection.document(uid).setData(
@@ -27,23 +30,7 @@ class DatabaseService {
     userCollection.document(uid).updateData({'username': name});
   }
 
-  Future<List<DocumentSnapshot>> fetchFirstList() async {
-    return (await Firestore.instance
-        .collection("Posts")
-        .orderBy("timestamp", descending: true)
-        .limit(10)
-        .getDocuments())
-        .documents;
-  }
-
-  Future<List<DocumentSnapshot>> fetchNextList(
-      List<DocumentSnapshot> documentList) async {
-    return (await Firestore.instance
-        .collection("Posts")
-        .orderBy("timestamp", descending: true)
-        .startAfterDocument(documentList[documentList.length - 1])
-        .limit(10)
-        .getDocuments())
-        .documents;
+  Future deletePost(String documentId) async {
+    postCollection.document(documentId).delete();
   }
 }

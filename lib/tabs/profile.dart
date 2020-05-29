@@ -124,7 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<String> uploadImage(imageFile) async {
     StorageUploadTask uploadTask =
-    storageRef.child("post_$postId.jpg").putFile(imageFile);
+        storageRef.child("post_$postId.jpg").putFile(imageFile);
     StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
     String downloadUrl = await storageSnap.ref.getDownloadURL();
     downloadUrl = downloadUrl.replaceAll('.jpg', '_640x640.jpg');
@@ -173,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 decoration: textInputDecoration.copyWith(
                     labelText: 'Username', prefixIcon: Icon(Icons.person)),
                 validator: (value) =>
-                value.isEmpty ? 'Name can\'t be empty' : null,
+                    value.isEmpty ? 'Name can\'t be empty' : null,
                 onSaved: (value) => name = value.trim(),
               ),
             ),
@@ -279,131 +279,130 @@ class _ProfilePageState extends State<ProfilePage> {
       return loading
           ? Loading()
           : StreamBuilder<DocumentSnapshot>(
-          stream: Firestore.instance
-              .collection('Users')
-              .document(user.uid)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              DocumentSnapshot userSnapshot = snapshot.data;
-              print("Inside stream builder " + userSnapshot['photoUrl']);
-              return Scaffold(
-                appBar: AppBar(
-                  title: Text(
-                    'Profile',
-                    style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
-                  ),
-                  centerTitle: true,
-                ),
-                body: Padding(
-                  padding: EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 0.0),
-                  child: Column(
-                    children: <Widget>[
-                      Center(
-                        child: GestureDetector(
-                          onTap: () => selectImage(context),
-                          child: Stack(children: <Widget>[
-                            CircleAvatar(
-                              backgroundImage: userSnapshot['photoUrl'] ==
-                                  null
-                                  ? CachedNetworkImageProvider(
-                                  'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png')
-                                  : CachedNetworkImageProvider(userSnapshot['photoUrl']),
-                              backgroundColor: Colors.grey[400],
-                              radius: 70,
-                            ),
-                            Positioned(
-                              bottom: 10,
-                              right: 10,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white),
-                                padding: EdgeInsets.all(2.0),
-                                child: CircleAvatar(
-                                  radius: 10,
-                                  child: Icon(
-                                    Icons.edit,
-                                    size: 12,
+              stream: Firestore.instance
+                  .collection('Users')
+                  .document(user.uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  DocumentSnapshot userSnapshot = snapshot.data;
+                  return Scaffold(
+                    appBar: AppBar(
+                      title: Text(
+                        'Profile',
+                        style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+                      ),
+                      centerTitle: true,
+                    ),
+                    body: Padding(
+                      padding: EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 0.0),
+                      child: Column(
+                        children: <Widget>[
+                          Center(
+                            child: GestureDetector(
+                              onTap: () => selectImage(context),
+                              child: Stack(children: <Widget>[
+                                CircleAvatar(
+                                  backgroundImage: userSnapshot['photoUrl'] ==
+                                          null
+                                      ? CachedNetworkImageProvider(
+                                          'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png')
+                                      : CachedNetworkImageProvider(
+                                          userSnapshot['photoUrl']),
+                                  backgroundColor: Colors.grey[400],
+                                  radius: 70,
+                                ),
+                                Positioned(
+                                  bottom: 10,
+                                  right: 10,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white),
+                                    padding: EdgeInsets.all(2.0),
+                                    child: CircleAvatar(
+                                      radius: 10,
+                                      child: Icon(
+                                        Icons.edit,
+                                        size: 12,
+                                      ),
+                                    ),
                                   ),
                                 ),
+                              ]),
+                            ),
+                          ),
+                          Divider(
+                            height: 60.0,
+                            color: Colors.white,
+                          ),
+                          GestureDetector(
+                            onTap: () => {
+                              changeUsername(context, userSnapshot['username'])
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(Icons.person),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Text(
+                                  "${userSnapshot['username']}",
+                                  style: styleText,
+                                ),
+                                Spacer(
+                                  flex: 1,
+                                ),
+                                Icon(
+                                  Icons.edit,
+                                  size: 20,
+                                )
+                              ],
+                            ),
+                          ),
+                          Divider(
+                            height: 30.0,
+                            color: Colors.white,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Icon(Icons.email),
+                              SizedBox(
+                                width: 20,
                               ),
-                            ),
-                          ]),
-                        ),
-                      ),
-                      Divider(
-                        height: 60.0,
-                        color: Colors.white,
-                      ),
-                      GestureDetector(
-                        onTap: () =>
-                        {
-                          changeUsername(context, userSnapshot['username'])
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Icon(Icons.person),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              "${userSnapshot['username']}",
-                              style: styleText,
-                            ),
-                            Spacer(
-                              flex: 1,
-                            ),
-                            Icon(
-                              Icons.edit,
-                              size: 20,
-                            )
-                          ],
-                        ),
-                      ),
-                      Divider(
-                        height: 30.0,
-                        color: Colors.white,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(Icons.email),
-                          SizedBox(
-                            width: 20,
+                              Text(
+                                "${user.email}",
+                                style: styleText,
+                              ),
+                            ],
                           ),
-                          Text(
-                            "${user.email}",
-                            style: styleText,
+                          Divider(
+                            height: 30.0,
+                            color: Colors.white,
                           ),
+                          FlatButton.icon(
+                            onPressed: () => showLogoutConfDialog(context),
+                            icon: Icon(
+                              Icons.exit_to_app,
+                              color: Colors.red,
+                            ),
+                            label: Text(
+                              'Logout'.toUpperCase(),
+                              style: GoogleFonts.ubuntu(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20),
+                            ),
+                          )
                         ],
                       ),
-                      Divider(
-                        height: 30.0,
-                        color: Colors.white,
-                      ),
-                      FlatButton.icon(
-                        onPressed: () => showLogoutConfDialog(context),
-                        icon: Icon(
-                          Icons.exit_to_app,
-                          color: Colors.red,
-                        ),
-                        label: Text(
-                          'Logout'.toUpperCase(),
-                          style: GoogleFonts.ubuntu(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              );
-            } else
-              return Loading();
-          });
+                    ),
+                  );
+                } else
+                  return Loading();
+              });
     }
   }
 }
