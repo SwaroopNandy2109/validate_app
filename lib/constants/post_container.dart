@@ -109,14 +109,12 @@ class PostCard extends StatelessWidget {
               ),
             ],
           ),
-          doc["type"] == 'Image'
+          doc["mediaURL"] != '' || doc["link"] != ''
               ? SizedBox(height: 20)
-              : SizedBox(
-                  height: 0,
-                ),
-          doc["type"] == 'Image'
-              ? Container(
-                  height: 320.0,
+              : Container(),
+          doc["mediaURL"] != ''
+              ? AspectRatio(
+                  aspectRatio: 4 / 3,
                   child: Center(
                     child: Container(
                       decoration: BoxDecoration(
@@ -128,10 +126,16 @@ class PostCard extends StatelessWidget {
                     ),
                   ),
                 )
-              : Text(''),
-          doc['type'] == 'link'
+              : Container(),
+          doc['link'] != '' ? SizedBox(height: 15) : Container(),
+          doc['link'] != ''
               ? Row(
                   children: <Widget>[
+                    Text(
+                      'Related links',
+                      style: GoogleFonts.ubuntu(fontSize: 20),
+                    ),
+                    SizedBox(width: 20),
                     Expanded(
                       child: Linkify(
                         text: doc["link"],
@@ -150,7 +154,7 @@ class PostCard extends StatelessWidget {
                     ),
                   ],
                 )
-              : Text("")
+              : Container()
         ],
       ),
     );

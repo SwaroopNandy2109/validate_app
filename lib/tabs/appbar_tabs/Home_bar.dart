@@ -44,6 +44,9 @@ class _HomeBarPageState extends State<HomeBarPage> {
     posts = [];
     hasMore = true;
     lastDocument = null;
+    setState(() {
+      isLoading = false;
+    });
     await getProducts();
   }
 
