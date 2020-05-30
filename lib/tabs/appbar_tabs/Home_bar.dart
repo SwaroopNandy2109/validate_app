@@ -134,11 +134,18 @@ class _HomeBarPageState extends State<HomeBarPage> {
     if (querySnapshot.documents.length < documentLimit) {
       hasMore = false;
     }
-    lastDocument = querySnapshot.documents.last;
-    posts.addAll(querySnapshot.documents);
-    setState(() {
-      isLoading = false;
-    });
+    if(querySnapshot.documents.isNotEmpty) {
+      lastDocument = querySnapshot.documents.last;
+      posts.addAll(querySnapshot.documents);
+      setState(() {
+        isLoading = false;
+      });
+    }
+    else{
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   showCategoryModal(parentContext) {
