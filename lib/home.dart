@@ -6,9 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:validatedapp/models/user.dart';
 import 'package:validatedapp/services/auth.dart';
-import 'package:validatedapp/tabs/AddPostPages/imagepost.dart';
-import 'package:validatedapp/tabs/AddPostPages/linkpost.dart';
-import 'package:validatedapp/tabs/AddPostPages/textpost.dart';
+import 'package:validatedapp/tabs/AddPostPages/addPostPage.dart';
 import 'package:validatedapp/tabs/post_page.dart';
 import 'package:validatedapp/tabs/profile.dart';
 
@@ -159,122 +157,8 @@ class _HomePageState extends State<HomePage> {
             child: FloatingActionButton(
               onPressed: () {
                 _checkEmailVerification();
-
-                showModalBottomSheet(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      height: MediaQuery.of(context).size.height * 0.35,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10.0),
-                          topRight: Radius.circular(10.0),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Text(
-                            'POST!',
-                            style: GoogleFonts.ubuntu(
-                              fontSize: 25,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              LinkPostPage()));
-                                },
-                                child: CircleAvatar(
-                                  radius: 35,
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  child: Icon(
-                                    FontAwesomeIcons.paperclip,
-                                    color: Colors.white,
-                                    size: 25,
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              TextPostPage()));
-                                },
-                                child: CircleAvatar(
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  radius: 35,
-                                  child: Icon(
-                                    FontAwesomeIcons.penAlt,
-                                    color: Colors.white,
-                                    size: 25,
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                child: CircleAvatar(
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  radius: 35,
-                                  child: Icon(
-                                    FontAwesomeIcons.video,
-                                    color: Colors.white,
-                                    size: 25,
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              ImagePostPage()));
-                                },
-                                child: CircleAvatar(
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  radius: 35,
-                                  child: Icon(
-                                    FontAwesomeIcons.image,
-                                    color: Colors.white,
-                                    size: 28,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.of(context).pop(),
-                            child: Icon(
-                              Icons.cancel,
-                              color: Theme.of(context).primaryColor,
-                              size: 25,
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                );
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => CommonPostPage()));
               },
               child: Icon(
                 Icons.add,

@@ -127,8 +127,8 @@ class PostCard extends StatelessWidget {
                   ),
                 )
               : Container(),
-          doc['link'] != '' ? SizedBox(height: 15) : Container(),
-          doc['link'] != ''
+          doc['link'] != "" ? SizedBox(height: 15) : Container(),
+          doc['link'] != ""
               ? Row(
                   children: <Widget>[
                     Text(

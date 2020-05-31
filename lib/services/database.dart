@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class DatabaseService {
   String uid;
@@ -31,6 +32,10 @@ class DatabaseService {
   }
 
   Future deletePost(String documentId) async {
-    postCollection.document(documentId).delete();
+    return await CloudFunctions.instance
+        .getHttpsCallable(functionName: 'deletePost')
+        .call(<String, dynamic>{
+      "id": documentId,
+    });
   }
 }

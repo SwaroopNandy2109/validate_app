@@ -11,18 +11,19 @@ import 'package:uuid/uuid.dart';
 import 'package:validatedapp/constants/shared.dart';
 import 'package:validatedapp/home.dart';
 
-class ImagePostPage extends StatefulWidget {
+class CommonPostPage extends StatefulWidget {
   @override
-  _ImagePostPageState createState() => _ImagePostPageState();
+  _CommonPostPageState createState() => _CommonPostPageState();
 }
 
-class _ImagePostPageState extends State<ImagePostPage> {
+class _CommonPostPageState extends State<CommonPostPage> {
   final StorageReference storageRef = FirebaseStorage.instance.ref();
   File file;
   final _formKey = GlobalKey<FormState>();
   String _selectedCategory;
   String title;
   String description;
+  String link = "";
   bool isUploading = false;
   String postId = Uuid().v4();
   List<String> categories = [
@@ -122,10 +123,22 @@ class _ImagePostPageState extends State<ImagePostPage> {
                   fillColor: Colors.purple[45],
                   filled: true,
                 ),
-                maxLines: 10,
+                maxLines: 7,
                 validator: (val) =>
                     description == null ? 'Please provide a description' : null,
                 onChanged: (val) => description = val.trim(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextFormField(
+                decoration: textInputDecoration.copyWith(
+                  hintText: 'Add a link (Optional)',
+                  hintStyle: GoogleFonts.ubuntu(),
+                  fillColor: Colors.purple[45],
+                  filled: true,
+                ),
+                onChanged: (val) => link = val.trim(),
               ),
               SizedBox(height: file == null ? 70 : 20),
               file != null
@@ -221,7 +234,7 @@ class _ImagePostPageState extends State<ImagePostPage> {
   }
 
   validateAndSubmit() async {
-    if (_formKey.currentState.validate() && file != null) {
+    if (_formKey.currentState.validate()) {
       await handleSubmit();
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => HomePage()));
@@ -271,17 +284,17 @@ class _ImagePostPageState extends State<ImagePostPage> {
     setState(() {
       isUploading = true;
     });
+    String mediaUrl;
 
-    String mediaUrl = await uploadImage(file);
+    file != null ? mediaUrl = await uploadImage(file) : mediaUrl = "";
     await CloudFunctions.instance
         .getHttpsCallable(functionName: 'addPost')
         .call(<String, dynamic>{
       "title": title,
       "description": description,
       "category": _selectedCategory,
-      "type": "Image",
       "mediaUrl": mediaUrl,
-      "link": "",
+      "link": link,
     });
     setState(() {
       file = null;

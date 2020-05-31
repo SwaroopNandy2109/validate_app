@@ -51,7 +51,7 @@ class _HomeBarPageState extends State<HomeBarPage> {
   }
 
   deletePost(documentId) async {
-    DatabaseService().deletePost(documentId);
+    await DatabaseService().deletePost(documentId);
     await refreshList();
   }
 
