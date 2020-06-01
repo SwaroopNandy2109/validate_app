@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:validatedapp/constants/post_container.dart';
+import 'package:validatedapp/models/user.dart';
 import 'package:validatedapp/services/database.dart';
+import 'package:provider/provider.dart';
 
 class HomeBarPage extends StatefulWidget {
   @override
@@ -30,10 +32,7 @@ class _HomeBarPageState extends State<HomeBarPage> {
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
       double currentScroll = _scrollController.position.pixels;
-      double delta = MediaQuery
-          .of(context)
-          .size
-          .height * 0.20;
+      double delta = MediaQuery.of(context).size.height * 0.20;
       if (maxScroll - currentScroll <= delta) {
         getProducts();
       }
@@ -47,7 +46,11 @@ class _HomeBarPageState extends State<HomeBarPage> {
     setState(() {
       isLoading = false;
     });
-    await getProducts();
+    if (categoryChoice == 'All') {
+      await getProducts();
+    } else {
+      await getCategoryProducts();
+    }
   }
 
   deletePost(documentId) async {
@@ -57,6 +60,7 @@ class _HomeBarPageState extends State<HomeBarPage> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
     getProducts();
     return Scaffold(
       body: RefreshIndicator(
@@ -81,26 +85,31 @@ class _HomeBarPageState extends State<HomeBarPage> {
               Expanded(
                 child: posts.length == 0
                     ? !isLoading
-                    ? Center(
-                  child: Text(
-                    'No Data Available',
-                    style: GoogleFonts.ubuntu(fontSize: 30),
-                  ),
-                )
-                    : Center(
-                  child: CircularProgressIndicator(),
-                )
+                        ? Center(
+                            child: Text(
+                              'No Posts Available',
+                              style: GoogleFonts.ubuntu(fontSize: 30),
+                            ),
+                          )
+                        : Center(
+                            child: CircularProgressIndicator(),
+                          )
                     : ListView.builder(
-                  controller: _scrollController,
-                  itemCount: posts.length,
-                  itemBuilder: (context, index) {
-                    return PostCard(doc: posts[index],
-                      deletePost: () async {
-                        await deletePost(posts[index].documentID);
-                      },
-                    );
-                  },
-                ),
+                        controller: _scrollController,
+                        itemCount: posts.length,
+                        itemBuilder: (context, index) {
+                          List upVotes = posts[index].data["upVotedBy"];
+                          List downVotes = posts[index].data["downVotedBy"];
+                          return PostCard(
+                            doc: posts[index],
+                            deletePost: () async {
+                              await deletePost(posts[index].documentID);
+                            },
+                            isLiked: upVotes.contains(user.uid),
+                            isUnliked: downVotes.contains(user.uid),
+                          );
+                        },
+                      ),
               ),
             ],
           ),
@@ -137,14 +146,56 @@ class _HomeBarPageState extends State<HomeBarPage> {
     if (querySnapshot.documents.length < documentLimit) {
       hasMore = false;
     }
-    if(querySnapshot.documents.isNotEmpty) {
+    if (querySnapshot.documents.isNotEmpty) {
       lastDocument = querySnapshot.documents.last;
       posts.addAll(querySnapshot.documents);
       setState(() {
         isLoading = false;
       });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
     }
-    else{
+  }
+
+  getCategoryProducts() async {
+    if (!hasMore) {
+      return;
+    }
+    if (isLoading) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+    QuerySnapshot querySnapshot;
+    if (lastDocument == null) {
+      querySnapshot = await firestore
+          .collection('Posts')
+          .where('category', isEqualTo: categoryChoice)
+          .orderBy("timestamp", descending: true)
+          .limit(documentLimit)
+          .getDocuments();
+    } else {
+      querySnapshot = await firestore
+          .collection('Posts')
+          .where('category', isEqualTo: categoryChoice)
+          .orderBy("timestamp", descending: true)
+          .startAfterDocument(lastDocument)
+          .limit(documentLimit)
+          .getDocuments();
+    }
+    if (querySnapshot.documents.length < documentLimit) {
+      hasMore = false;
+    }
+    if (querySnapshot.documents.isNotEmpty) {
+      lastDocument = querySnapshot.documents.last;
+      posts.addAll(querySnapshot.documents);
+      setState(() {
+        isLoading = false;
+      });
+    } else {
       setState(() {
         isLoading = false;
       });
@@ -158,10 +209,7 @@ class _HomeBarPageState extends State<HomeBarPage> {
       builder: (context) {
         return Container(
           margin: EdgeInsets.symmetric(horizontal: 10),
-          height: MediaQuery
-              .of(context)
-              .size
-              .height * 0.5,
+          height: MediaQuery.of(context).size.height * 0.5,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -195,18 +243,18 @@ class _HomeBarPageState extends State<HomeBarPage> {
       ),
       trailing: title == categoryChoice
           ? Icon(
-        Icons.done,
-        color: Colors.green,
-        size: 28.0,
-      )
+              Icons.done,
+              color: Colors.green,
+              size: 28.0,
+            )
           : null,
-      onTap: () {
+      onTap: () async {
         setState(() {
           categoryChoice = title;
         });
         Navigator.of(context).pop();
+        await refreshList();
       },
     );
   }
-
 }

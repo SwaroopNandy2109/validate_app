@@ -1,28 +1,39 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:validatedapp/models/user.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   final DocumentSnapshot doc;
   final Function deletePost;
+  final bool isLiked;
+  final bool isUnliked;
+  PostCard({this.doc, this.deletePost, this.isLiked, this.isUnliked});
 
-  PostCard({this.doc, this.deletePost});
+  @override
+  _PostCardState createState() => _PostCardState(this.isLiked,this.isUnliked);
+}
 
+class _PostCardState extends State<PostCard> {
+  bool isLiked;
+  bool isUnliked;
+  _PostCardState(this.isLiked,this.isUnliked);
   final String dummyPhotoUrl =
       'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png';
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
-    var date = doc["timestamp"].toDate();
+    var date = widget.doc["timestamp"].toDate();
     return Container(
       margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
       padding: EdgeInsets.only(left: 10, right: 10, bottom: 20),
@@ -31,7 +42,7 @@ class PostCard extends StatelessWidget {
           StreamBuilder<DocumentSnapshot>(
             stream: Firestore.instance
                 .collection('Users')
-                .document(doc["author"])
+                .document(widget.doc["author"])
                 .snapshots(),
             builder: (context, snapshot) {
               return Row(
@@ -68,7 +79,7 @@ class PostCard extends StatelessWidget {
                     children: <Widget>[
                       IconButton(
                         onPressed: () {
-                          showOptions(context, doc["author"], user.uid);
+                          showOptions(context, widget.doc["author"], user.uid);
                         },
                         icon: Icon(
                           Icons.more_vert,
@@ -89,7 +100,7 @@ class PostCard extends StatelessWidget {
           Row(
             children: <Widget>[
               Text(
-                doc["title"],
+                widget.doc["title"],
                 style: GoogleFonts.ubuntu(
                     fontSize: 25, fontWeight: FontWeight.w700),
               ),
@@ -100,7 +111,7 @@ class PostCard extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: AutoSizeText(
-                  doc["description"],
+                  widget.doc["description"],
                   minFontSize: 18,
                   overflow: TextOverflow.ellipsis,
                   maxFontSize: double.infinity,
@@ -109,10 +120,10 @@ class PostCard extends StatelessWidget {
               ),
             ],
           ),
-          doc["mediaURL"] != '' || doc["link"] != ''
+          widget.doc["mediaURL"] != '' || widget.doc["link"] != ''
               ? SizedBox(height: 20)
               : Container(),
-          doc["mediaURL"] != ''
+          widget.doc["mediaURL"] != ''
               ? AspectRatio(
                   aspectRatio: 4 / 3,
                   child: Center(
@@ -120,15 +131,16 @@ class PostCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           fit: BoxFit.fill,
-                          image: CachedNetworkImageProvider(doc["mediaURL"]),
+                          image: CachedNetworkImageProvider(
+                              widget.doc["mediaURL"]),
                         ),
                       ),
                     ),
                   ),
                 )
               : Container(),
-          doc['link'] != "" ? SizedBox(height: 15) : Container(),
-          doc['link'] != ""
+          widget.doc['link'] != "" ? SizedBox(height: 15) : Container(),
+          widget.doc['link'] != ""
               ? Row(
                   children: <Widget>[
                     Text(
@@ -138,23 +150,56 @@ class PostCard extends StatelessWidget {
                     SizedBox(width: 20),
                     Expanded(
                       child: Linkify(
-                        text: doc["link"],
+                        text: widget.doc["link"],
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.ubuntu(
                             fontWeight: FontWeight.w700, fontSize: 15),
                         maxLines: 2,
                         onOpen: (url) async {
                           try {
-                            await launch(doc["link"]);
-                          } catch (e) {
-                            print('Couldn\'t Launch Link because \n $e');
-                          }
+                            await launch(widget.doc["link"]);
+                          } catch (e) {}
                         },
                       ),
                     ),
                   ],
                 )
-              : Container()
+              : Container(),
+          SizedBox(height: 10),
+          Row(
+            children: <Widget>[
+              IconButton(
+                  icon: Icon(
+                    FontAwesomeIcons.arrowCircleUp,
+                    size: 35,
+                    color: isLiked == true ? Colors.green : Colors.grey,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      isLiked = !isLiked;
+                      isUnliked = false;
+                    });
+                    CloudFunctions.instance
+                        .getHttpsCallable(functionName: 'upVotePost')
+                        .call(<String, dynamic>{'id': widget.doc.documentID});
+                  }),
+              IconButton(
+                  icon: Icon(
+                    FontAwesomeIcons.arrowCircleDown,
+                    size: 35,
+                    color: isUnliked ? Colors.red : Colors.grey,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      isUnliked = !isUnliked;
+                      isLiked = false;
+                    });
+                    CloudFunctions.instance
+                        .getHttpsCallable(functionName: 'downVotePost')
+                        .call(<String, dynamic>{'id': widget.doc.documentID});
+                  }),
+            ],
+          ),
         ],
       ),
     );
@@ -187,7 +232,7 @@ class PostCard extends StatelessWidget {
                       ),
                       onPressed: () {
                         Navigator.pop(context);
-                        deletePost();
+                        widget.deletePost();
                       },
                     ),
               SimpleDialogOption(
