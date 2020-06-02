@@ -64,6 +64,7 @@ class _HomeBarPageState extends State<HomeBarPage> {
     getProducts();
     return Scaffold(
       body: RefreshIndicator(
+        strokeWidth: 3.0,
         key: refreshIndicatorState,
         onRefresh: () async {
           await refreshList();
@@ -105,8 +106,8 @@ class _HomeBarPageState extends State<HomeBarPage> {
                             deletePost: () async {
                               await deletePost(posts[index].documentID);
                             },
-                            isLiked: upVotes.contains(user.uid),
-                            isUnliked: downVotes.contains(user.uid),
+                            upVotes: upVotes,
+                            downVotes: downVotes,
                           );
                         },
                       ),

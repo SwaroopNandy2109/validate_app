@@ -11,22 +11,26 @@ import 'package:jiffy/jiffy.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:validatedapp/models/user.dart';
+import 'package:intl/intl.dart';
 
 class PostCard extends StatefulWidget {
   final DocumentSnapshot doc;
   final Function deletePost;
-  final bool isLiked;
-  final bool isUnliked;
-  PostCard({this.doc, this.deletePost, this.isLiked, this.isUnliked});
+  final List upVotes;
+  final List downVotes;
+
+  PostCard({this.doc, this.deletePost, this.upVotes, this.downVotes});
 
   @override
-  _PostCardState createState() => _PostCardState(this.isLiked,this.isUnliked);
+  _PostCardState createState() => _PostCardState(this.upVotes, this.downVotes);
 }
 
 class _PostCardState extends State<PostCard> {
-  bool isLiked;
-  bool isUnliked;
-  _PostCardState(this.isLiked,this.isUnliked);
+  List upVotes;
+  List downVotes;
+
+  _PostCardState(this.upVotes, this.downVotes);
+
   final String dummyPhotoUrl =
       'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png';
 
@@ -34,6 +38,8 @@ class _PostCardState extends State<PostCard> {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
     var date = widget.doc["timestamp"].toDate();
+    int upVotesCount = upVotes.length;
+    int downVotesCount = downVotes.length;
     return Container(
       margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
       padding: EdgeInsets.only(left: 10, right: 10, bottom: 20),
@@ -99,10 +105,12 @@ class _PostCardState extends State<PostCard> {
           ),
           Row(
             children: <Widget>[
-              Text(
-                widget.doc["title"],
-                style: GoogleFonts.ubuntu(
-                    fontSize: 25, fontWeight: FontWeight.w700),
+              Expanded(
+                child: AutoSizeText(
+                  widget.doc["title"],
+                  style: GoogleFonts.ubuntu(
+                      fontSize: 25, fontWeight: FontWeight.w700),
+                ),
               ),
             ],
           ),
@@ -172,32 +180,50 @@ class _PostCardState extends State<PostCard> {
                   icon: Icon(
                     FontAwesomeIcons.arrowCircleUp,
                     size: 35,
-                    color: isLiked == true ? Colors.green : Colors.grey,
+                    color: upVotes.contains(user.uid) == true
+                        ? Colors.green
+                        : Colors.grey,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     setState(() {
-                      isLiked = !isLiked;
-                      isUnliked = false;
+                      upVotes.contains(user.uid)
+                          ? upVotes.remove(user.uid)
+                          : upVotes.add(user.uid);
+                      if (downVotes.contains(user.uid)) {
+                        downVotes.remove(user.uid);
+                      }
                     });
-                    CloudFunctions.instance
+                    await CloudFunctions.instance
                         .getHttpsCallable(functionName: 'upVotePost')
                         .call(<String, dynamic>{'id': widget.doc.documentID});
                   }),
+              Text(NumberFormat.compact().format(upVotesCount),
+                  style: GoogleFonts.ubuntu(
+                      fontSize: 20, fontWeight: FontWeight.w600)),
+              SizedBox(width: 10),
               IconButton(
                   icon: Icon(
                     FontAwesomeIcons.arrowCircleDown,
                     size: 35,
-                    color: isUnliked ? Colors.red : Colors.grey,
+                    color:
+                        downVotes.contains(user.uid) ? Colors.red : Colors.grey,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     setState(() {
-                      isUnliked = !isUnliked;
-                      isLiked = false;
+                      downVotes.contains(user.uid)
+                          ? downVotes.remove(user.uid)
+                          : downVotes.add(user.uid);
+                      if (upVotes.contains(user.uid)) {
+                        upVotes.remove(user.uid);
+                      }
                     });
-                    CloudFunctions.instance
+                    await CloudFunctions.instance
                         .getHttpsCallable(functionName: 'downVotePost')
                         .call(<String, dynamic>{'id': widget.doc.documentID});
                   }),
+              Text(NumberFormat.compact().format(downVotesCount),
+                  style: GoogleFonts.ubuntu(
+                      fontSize: 20, fontWeight: FontWeight.w600)),
             ],
           ),
         ],
