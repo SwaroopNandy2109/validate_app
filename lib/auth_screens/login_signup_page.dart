@@ -115,14 +115,16 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     return _isLoading
         ? Loading()
         : Scaffold(
-            appBar: AppBar(
-              title: Text(
-                _isLoginForm ? 'Sign In' : 'Register',
-                style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
+            body: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF4e54c8), Color(0xFF8f94fb)],
+                ),
               ),
-              centerTitle: true,
+              child: _showForm(),
             ),
-            body: _showForm(),
           );
   }
 
@@ -161,12 +163,20 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   List<Widget> _toggleForm() {
     List<Widget> widgetList = [];
-    widgetList.add(FlutterLogo(
-      size: 80,
-    ));
+    widgetList.add(
+      Padding(
+        padding: const EdgeInsets.only(top: 40),
+        child: Center(
+          child: Text(
+            _isLoginForm ? 'Sign In' : 'Register',
+            style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold,fontSize: 60,color: Colors.white),
+          ),
+        ),
+      ),
+    );
     if (_isLoginForm) {
       widgetList.add(SizedBox(
-        height: 35,
+        height: MediaQuery.of(context).size.height * 0.15,
       ));
       widgetList.add(showEmailInput());
       widgetList.add(showPasswordInput());
@@ -184,7 +194,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       ));
     } else {
       widgetList.add(SizedBox(
-        height: 20,
+        height: MediaQuery.of(context).size.height * 0.1,
       ));
       widgetList.add(showFirstNameInput());
       widgetList.add(showLastNameInput());
@@ -220,12 +230,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
   Widget googleButton() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 17.0),
-      child: FlatButton.icon(
+      child: RaisedButton.icon(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(7.0),
         ),
         padding: EdgeInsets.all(15.0),
-        color: Colors.deepPurple,
+        color: Colors.white,
         onPressed: () async {
           setState(() {
             _errorMessage = "";
@@ -252,7 +262,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         },
         icon: Icon(
           FontAwesomeIcons.google,
-          color: Colors.white,
+          color: Theme.of(context).primaryColor,
           size: 25.0,
         ),
         label: Padding(
@@ -260,8 +270,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           child: Text(
             'sign in with google'.toUpperCase(),
             style: GoogleFonts.ubuntu(
-              color: Colors.white,
+              color: Theme.of(context).primaryColor,
               fontSize: 17,
+              fontWeight: FontWeight.w700
             ),
           ),
         ),
@@ -284,7 +295,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           keyboardType: TextInputType.text,
           autofocus: false,
           decoration: textInputDecoration.copyWith(
-              labelText: 'First Name',
+              hintText: 'First Name',
               prefixIcon: Icon(
                 Icons.person,
               )),
@@ -311,7 +322,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           keyboardType: TextInputType.text,
           autofocus: false,
           decoration: textInputDecoration.copyWith(
-              labelText: 'Last Name', prefixIcon: Icon(Icons.person)),
+              hintText: 'Last Name', prefixIcon: Icon(Icons.person)),
           validator: (value) => value.isEmpty ? 'Name can\'t be empty' : null,
           onSaved: (value) => _lastName = value.trim(),
           onChanged: (value) => _lastName = value.trim(),
@@ -335,7 +346,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           keyboardType: TextInputType.emailAddress,
           autofocus: false,
           decoration: textInputDecoration.copyWith(
-              labelText: 'Email', prefixIcon: Icon(Icons.alternate_email)),
+              hintText: 'Email', prefixIcon: Icon(Icons.alternate_email)),
           validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
           onSaved: (value) => _email = value.trim(),
         ),
@@ -353,7 +364,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         obscureText: _obscureText,
         autofocus: false,
         decoration: textInputDecoration.copyWith(
-          labelText: 'Password',
+          hintText: 'Password',
           prefixIcon: Icon(Icons.lock),
           suffixIcon: _isFocused
               ? GestureDetector(
@@ -393,7 +404,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 ? 'Create an Account'.toUpperCase()
                 : 'Have an Account? Sign in'.toUpperCase(),
             style: GoogleFonts.ubuntu(
-                fontSize: 18.0, fontWeight: FontWeight.w300)),
+                fontSize: 18.0, fontWeight: FontWeight.bold,color: Colors.white)),
         onTap: toggleFormMode,
       ),
     );
@@ -408,12 +419,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           child: FlatButton(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
-            color: Theme.of(context).primaryColor,
+            color: Colors.white,
             child: Text(
               _isLoginForm ? 'Login' : 'Create Account',
               style: GoogleFonts.ubuntu(
                   fontSize: 20.0,
-                  color: Colors.white,
+                  color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w700),
             ),
             onPressed: validateAndSubmit,
