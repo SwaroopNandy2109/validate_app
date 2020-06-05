@@ -104,6 +104,7 @@ class _CommonPostPageState extends State<CommonPostPage> {
                 height: 10,
               ),
               TextFormField(
+                maxLength: 50,
                 decoration: textInputDecoration.copyWith(
                     hintText: 'Give A Interesting Title...',
                     hintStyle: GoogleFonts.ubuntu(),

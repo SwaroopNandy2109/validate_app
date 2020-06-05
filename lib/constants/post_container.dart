@@ -8,9 +8,8 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:validatedapp/models/user.dart';
+import 'package:validatedapp/constants/shared.dart';
 import 'package:intl/intl.dart';
 
 class PostCard extends StatefulWidget {
@@ -18,16 +17,36 @@ class PostCard extends StatefulWidget {
   final Function deletePost;
   final List upVotes;
   final List downVotes;
+  final String uid;
+  final Function refresh;
 
-  PostCard({this.doc, this.deletePost, this.upVotes, this.downVotes});
+  PostCard(
+      {this.doc,
+      this.deletePost,
+      this.upVotes,
+      this.downVotes,
+      this.uid,
+      this.refresh});
 
   @override
   _PostCardState createState() => _PostCardState(this.upVotes, this.downVotes);
 }
 
 class _PostCardState extends State<PostCard> {
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List upVotes;
   List downVotes;
+  String _currentTitle = "";
+  String _currentCategory = "";
+  String _currentDescription = "";
+  String _currentLink = "";
+  List<String> categories = [
+    'Politics',
+    'Sports',
+    'Economy',
+    'Business',
+    'Entertainment'
+  ];
 
   _PostCardState(this.upVotes, this.downVotes);
 
@@ -36,7 +55,6 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
     var date = widget.doc["timestamp"].toDate();
     int upVotesCount = upVotes.length;
     int downVotesCount = downVotes.length;
@@ -85,7 +103,8 @@ class _PostCardState extends State<PostCard> {
                     children: <Widget>[
                       IconButton(
                         onPressed: () {
-                          showOptions(context, widget.doc["author"], user.uid);
+                          showOptions(
+                              context, widget.doc["author"], widget.uid);
                         },
                         icon: Icon(
                           Icons.more_vert,
@@ -180,17 +199,17 @@ class _PostCardState extends State<PostCard> {
                   icon: Icon(
                     FontAwesomeIcons.arrowCircleUp,
                     size: 35,
-                    color: upVotes.contains(user.uid) == true
+                    color: upVotes.contains(widget.uid) == true
                         ? Colors.green
                         : Colors.grey,
                   ),
                   onPressed: () async {
                     setState(() {
-                      upVotes.contains(user.uid)
-                          ? upVotes.remove(user.uid)
-                          : upVotes.add(user.uid);
-                      if (downVotes.contains(user.uid)) {
-                        downVotes.remove(user.uid);
+                      upVotes.contains(widget.uid)
+                          ? upVotes.remove(widget.uid)
+                          : upVotes.add(widget.uid);
+                      if (downVotes.contains(widget.uid)) {
+                        downVotes.remove(widget.uid);
                       }
                     });
                     await CloudFunctions.instance
@@ -205,16 +224,17 @@ class _PostCardState extends State<PostCard> {
                   icon: Icon(
                     FontAwesomeIcons.arrowCircleDown,
                     size: 35,
-                    color:
-                        downVotes.contains(user.uid) ? Colors.red : Colors.grey,
+                    color: downVotes.contains(widget.uid)
+                        ? Colors.red
+                        : Colors.grey,
                   ),
                   onPressed: () async {
                     setState(() {
-                      downVotes.contains(user.uid)
-                          ? downVotes.remove(user.uid)
-                          : downVotes.add(user.uid);
-                      if (upVotes.contains(user.uid)) {
-                        upVotes.remove(user.uid);
+                      downVotes.contains(widget.uid)
+                          ? downVotes.remove(widget.uid)
+                          : downVotes.add(widget.uid);
+                      if (upVotes.contains(widget.uid)) {
+                        upVotes.remove(widget.uid);
                       }
                     });
                     await CloudFunctions.instance
@@ -261,6 +281,18 @@ class _PostCardState extends State<PostCard> {
                         widget.deletePost();
                       },
                     ),
+              authorUid == userUid
+                  ? SimpleDialogOption(
+                      child: Text(
+                        "Edit",
+                        style: GoogleFonts.ubuntu(),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        showEditModalSheet(context);
+                      },
+                    )
+                  : Container(),
               SimpleDialogOption(
                 child: Text(
                   "Cancel",
@@ -271,5 +303,149 @@ class _PostCardState extends State<PostCard> {
             ],
           );
         });
+  }
+
+  showEditModalSheet(parentContext) {
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        context: parentContext,
+        builder: (context) {
+          return Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Form(
+              autovalidate: true,
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Center(
+                      child: Text(
+                        'Edit Post',
+                        style: GoogleFonts.ubuntu(
+                            fontSize: 25, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                    SizedBox(height: 18),
+                    DropdownButtonFormField(
+                      decoration: textInputDecoration,
+                      value: _currentCategory.isEmpty
+                          ? widget.doc["category"]
+                          : _currentCategory,
+                      items: categories.map((cat) {
+                        return DropdownMenuItem(
+                          value: cat,
+                          child: Text(
+                            '$cat',
+                            style: GoogleFonts.ubuntu(),
+                          ),
+                        );
+                      }).toList(),
+                      hint: Text(
+                        'Choose a category',
+                        style: GoogleFonts.ubuntu(),
+                      ),
+                      onChanged: (val) {
+                        setState(() {
+                          _currentCategory = val;
+                        });
+                      },
+                      validator: (val) => (_currentCategory == null ||
+                                  _currentCategory.isEmpty) &&
+                              widget.doc["category"].isEmpty
+                          ? 'Please choose a category'
+                          : null,
+                    ),
+                    SizedBox(height: 18),
+                    TextFormField(
+                      maxLength: 50,
+                      initialValue: widget.doc["title"],
+                      decoration: textInputDecoration.copyWith(
+                        hintText: 'Edit your title...',
+                        hintStyle:
+                            GoogleFonts.ubuntu(fontWeight: FontWeight.w600),
+                      ),
+                      validator: (val) =>
+                          val.isEmpty ? "Title can'\'t be empty" : null,
+                      onChanged: (val) => _currentTitle = val.trim(),
+                    ),
+                    SizedBox(height: 18),
+                    TextFormField(
+                      maxLines: 10,
+                      initialValue: widget.doc["description"],
+                      decoration: textInputDecoration.copyWith(
+                        hintText: 'Edit your description...',
+                        hintStyle:
+                            GoogleFonts.ubuntu(fontWeight: FontWeight.w600),
+                      ),
+                      validator: (val) =>
+                          val.isEmpty ? "Description can'\'t be empty" : null,
+                      onChanged: (val) => _currentDescription = val.trim(),
+                    ),
+                    SizedBox(height: 18),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          bottom:
+                              MediaQuery.of(context).viewInsets.bottom * 0.3),
+                      child: TextFormField(
+                        initialValue: widget.doc["link"],
+                        decoration: textInputDecoration.copyWith(
+                          hintText: 'Edit your link...',
+                          hintStyle:
+                              GoogleFonts.ubuntu(fontWeight: FontWeight.w600),
+                        ),
+                        onChanged: (val) => _currentLink = val.trim(),
+                      ),
+                    ),
+                    SizedBox(height: 25),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom),
+                      child: RaisedButton(
+                        padding: EdgeInsets.all(15),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0)),
+                        color: Colors.deepPurple,
+                        onPressed: () async {
+                          await validateAndSubmitEditForm();
+                          Navigator.pop(context);
+                          widget.refresh();
+                        },
+                        child: Text(
+                          'Finish Edit',
+                          style: GoogleFonts.ubuntu(
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              fontSize: 18),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10))));
+  }
+
+  validateAndSubmitEditForm() async {
+    if (!_formKey.currentState.validate()) {
+      return;
+    }
+    await CloudFunctions.instance
+        .getHttpsCallable(functionName: 'updatePost')
+        .call(<String, dynamic>{
+      'id': widget.doc.documentID,
+      'title': _currentTitle.isEmpty ? widget.doc["title"] : _currentTitle,
+      'description': _currentDescription.isEmpty
+          ? widget.doc["description"]
+          : _currentDescription,
+      'link': _currentLink.isEmpty ? widget.doc["link"] : _currentLink,
+      'category':
+          _currentCategory.isEmpty ? widget.doc["category"] : _currentCategory,
+    });
   }
 }

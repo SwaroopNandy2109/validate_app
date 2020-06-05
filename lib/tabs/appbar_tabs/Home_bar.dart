@@ -108,6 +108,8 @@ class _HomeBarPageState extends State<HomeBarPage> {
                             },
                             upVotes: upVotes,
                             downVotes: downVotes,
+                            uid: user.uid,
+                            refresh: () =>refreshList(),
                           );
                         },
                       ),
