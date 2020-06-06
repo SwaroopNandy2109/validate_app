@@ -174,7 +174,7 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
     if (lastDocument == null) {
       querySnapshot = await firestore
           .collection('Posts')
-          .where('category', isEqualTo: categoryChoice)
+          .where("category", isEqualTo: categoryChoice)
           .orderBy("numOfVotes", descending: true)
           .orderBy("timestamp", descending: true)
           .limit(documentLimit)
@@ -182,7 +182,7 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
     } else {
       querySnapshot = await firestore
           .collection('Posts')
-          .where('category', isEqualTo: categoryChoice)
+          .where("category", isEqualTo: categoryChoice)
           .orderBy("numOfVotes", descending: true)
           .orderBy("timestamp", descending: true)
           .startAfterDocument(lastDocument)
@@ -212,10 +212,7 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
       builder: (context) {
         return Container(
           margin: EdgeInsets.symmetric(horizontal: 10),
-          height: MediaQuery
-              .of(context)
-              .size
-              .height * 0.5,
+          height: MediaQuery.of(context).size.height * 0.5,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -249,16 +246,17 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
       ),
       trailing: title == categoryChoice
           ? Icon(
-        Icons.done,
-        color: Colors.green,
-        size: 28.0,
-      )
+              Icons.done,
+              color: Colors.green,
+              size: 28.0,
+            )
           : null,
-      onTap: () {
+      onTap: () async {
         setState(() {
           categoryChoice = title;
         });
         Navigator.of(context).pop();
+        await refreshList();
       },
     );
   }

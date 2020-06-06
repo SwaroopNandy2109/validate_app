@@ -161,7 +161,7 @@ class _HomeBarPageState extends State<HomeBarPage> {
       });
     }
   }
-// push kar de Ill check it out. Cool
+
   getCategoryProducts() async {
     if (!hasMore) {
       return;
