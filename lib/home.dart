@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:validatedapp/models/user.dart';
 import 'package:validatedapp/services/auth.dart';
 import 'package:validatedapp/tabs/AddPostPages/addPostPage.dart';
-import 'package:validatedapp/tabs/post_page.dart';
+import 'package:validatedapp/tabs/home_trending_page.dart';
 import 'package:validatedapp/tabs/profile.dart';
 
 class HomePage extends StatefulWidget {
@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
           controller: controller,
           children: <Widget>[
             StreamProvider<User>.value(
-              child: PostPage(),
+              child: HomeTrendingPage(),
               value: AuthService().currentUser,
             ),
             StreamProvider<User>.value(

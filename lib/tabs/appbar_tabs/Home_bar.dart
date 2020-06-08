@@ -109,7 +109,7 @@ class _HomeBarPageState extends State<HomeBarPage> {
                             upVotes: upVotes,
                             downVotes: downVotes,
                             uid: user.uid,
-                            refresh: () =>refreshList(),
+                            refresh: () => refreshList(),
                           );
                         },
                       ),
@@ -162,6 +162,7 @@ class _HomeBarPageState extends State<HomeBarPage> {
     }
   }
 
+// push kar de Ill check it out. Cool
   getCategoryProducts() async {
     if (!hasMore) {
       return;

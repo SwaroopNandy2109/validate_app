@@ -3,12 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:validatedapp/tabs/appbar_tabs/Home_bar.dart';
 import 'package:validatedapp/tabs/appbar_tabs/Trending_bar.dart';
 
-class PostPage extends StatefulWidget {
+class HomeTrendingPage extends StatefulWidget {
   @override
-  _PostPageState createState() => _PostPageState();
+  _HomeTrendingPageState createState() => _HomeTrendingPageState();
 }
 
-class _PostPageState extends State<PostPage> {
+class _HomeTrendingPageState extends State<HomeTrendingPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(

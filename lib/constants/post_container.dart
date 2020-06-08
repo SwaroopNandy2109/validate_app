@@ -11,6 +11,7 @@ import 'package:jiffy/jiffy.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:validatedapp/constants/shared.dart';
 import 'package:intl/intl.dart';
+import 'package:validatedapp/tabs/view_post.dart';
 
 class PostCard extends StatefulWidget {
   final DocumentSnapshot doc;
@@ -58,195 +59,207 @@ class _PostCardState extends State<PostCard> {
     var date = widget.doc["timestamp"].toDate();
     int upVotesCount = upVotes.length;
     int downVotesCount = downVotes.length;
-    return Container(
-      margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
-      padding: EdgeInsets.only(left: 10, right: 10, bottom: 20),
-      child: Column(
-        children: <Widget>[
-          StreamBuilder<DocumentSnapshot>(
-            stream: Firestore.instance
-                .collection('Users')
-                .document(widget.doc["author"])
-                .snapshots(),
-            builder: (context, snapshot) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    backgroundImage: CachedNetworkImageProvider(
-                        !snapshot.hasData
-                            ? dummyPhotoUrl
-                            : snapshot.data["photoUrl"]),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      AutoSizeText(
-                        !snapshot.hasData
-                            ? 'Loading...'
-                            : snapshot.data["username"],
-                        maxLines: 1,
-                        style: GoogleFonts.ubuntu(
-                            fontSize: 20, fontWeight: FontWeight.w800),
-                        minFontSize: 10,
-                        maxFontSize: 20,
-                      ),
-                      Text(Jiffy(date).yMMMd)
-                    ],
-                  ),
-                  Spacer(),
-                  Row(
-                    children: <Widget>[
-                      IconButton(
-                        onPressed: () {
-                          showOptions(
-                              context, widget.doc["author"], widget.uid);
-                        },
-                        icon: Icon(
-                          Icons.more_vert,
-                          size: 35,
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              );
-            },
-          ),
-          Divider(
-            height: 30,
-            thickness: 0.8,
-            color: Colors.grey,
-          ),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: AutoSizeText(
-                  widget.doc["title"],
-                  style: GoogleFonts.ubuntu(
-                      fontSize: 25, fontWeight: FontWeight.w700),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 15),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: AutoSizeText(
-                  widget.doc["description"],
-                  minFontSize: 18,
-                  overflow: TextOverflow.ellipsis,
-                  maxFontSize: double.infinity,
-                  maxLines: 5,
-                ),
-              ),
-            ],
-          ),
-          widget.doc["mediaURL"] != '' || widget.doc["link"] != ''
-              ? SizedBox(height: 20)
-              : Container(),
-          widget.doc["mediaURL"] != ''
-              ? AspectRatio(
-                  aspectRatio: 4 / 3,
-                  child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: CachedNetworkImageProvider(
-                              widget.doc["mediaURL"]),
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-              : Container(),
-          widget.doc['link'] != "" ? SizedBox(height: 15) : Container(),
-          widget.doc['link'] != ""
-              ? Row(
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ViewPost(
+                doc: widget.doc,
+                upVotes: upVotes,
+                downVotes: downVotes,
+                uid: widget.uid,
+              ))),
+      child: Container(
+        margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
+        padding: EdgeInsets.only(left: 10, right: 10, bottom: 20),
+        child: Column(
+          children: <Widget>[
+            StreamBuilder<DocumentSnapshot>(
+              stream: Firestore.instance
+                  .collection('Users')
+                  .document(widget.doc["author"])
+                  .snapshots(),
+              builder: (context, snapshot) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      'Related links',
-                      style: GoogleFonts.ubuntu(fontSize: 20),
+                    CircleAvatar(
+                      backgroundColor: Colors.grey,
+                      backgroundImage: CachedNetworkImageProvider(
+                          !snapshot.hasData
+                              ? dummyPhotoUrl
+                              : snapshot.data["photoUrl"]),
                     ),
-                    SizedBox(width: 20),
-                    Expanded(
-                      child: Linkify(
-                        text: widget.doc["link"],
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.ubuntu(
-                            fontWeight: FontWeight.w700, fontSize: 15),
-                        maxLines: 2,
-                        onOpen: (url) async {
-                          try {
-                            await launch(widget.doc["link"]);
-                          } catch (e) {}
-                        },
-                      ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        AutoSizeText(
+                          !snapshot.hasData
+                              ? 'Loading...'
+                              : snapshot.data["username"],
+                          maxLines: 1,
+                          style: GoogleFonts.ubuntu(
+                              fontSize: 20, fontWeight: FontWeight.w800),
+                          minFontSize: 10,
+                          maxFontSize: 20,
+                        ),
+                        Text(Jiffy(date).yMMMd)
+                      ],
+                    ),
+                    Spacer(),
+                    Row(
+                      children: <Widget>[
+                        IconButton(
+                          onPressed: () {
+                            showOptions(
+                                context, widget.doc["author"], widget.uid);
+                          },
+                          icon: Icon(
+                            Icons.more_vert,
+                            size: 35,
+                          ),
+                        )
+                      ],
                     ),
                   ],
-                )
-              : Container(),
-          SizedBox(height: 10),
-          Row(
-            children: <Widget>[
-              IconButton(
-                  icon: Icon(
-                    FontAwesomeIcons.arrowCircleUp,
-                    size: 35,
-                    color: upVotes.contains(widget.uid) == true
-                        ? Colors.green
-                        : Colors.grey,
+                );
+              },
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: AutoSizeText(
+                    widget.doc["title"],
+                    style: GoogleFonts.ubuntu(
+                        fontSize: 25, fontWeight: FontWeight.w700),
                   ),
-                  onPressed: () async {
-                    setState(() {
-                      upVotes.contains(widget.uid)
-                          ? upVotes.remove(widget.uid)
-                          : upVotes.add(widget.uid);
-                      if (downVotes.contains(widget.uid)) {
-                        downVotes.remove(widget.uid);
-                      }
-                    });
-                    await CloudFunctions.instance
-                        .getHttpsCallable(functionName: 'upVotePost')
-                        .call(<String, dynamic>{'id': widget.doc.documentID});
-                  }),
-              Text(NumberFormat.compact().format(upVotesCount),
-                  style: GoogleFonts.ubuntu(
-                      fontSize: 20, fontWeight: FontWeight.w600)),
-              SizedBox(width: 10),
-              IconButton(
-                  icon: Icon(
-                    FontAwesomeIcons.arrowCircleDown,
-                    size: 35,
-                    color: downVotes.contains(widget.uid)
-                        ? Colors.red
-                        : Colors.grey,
+                ),
+              ],
+            ),
+            SizedBox(height: 15),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: AutoSizeText(
+                    widget.doc["description"],
+                    minFontSize: 18,
+                    overflow: TextOverflow.ellipsis,
+                    maxFontSize: double.infinity,
+                    maxLines: 5,
                   ),
-                  onPressed: () async {
-                    setState(() {
-                      downVotes.contains(widget.uid)
-                          ? downVotes.remove(widget.uid)
-                          : downVotes.add(widget.uid);
-                      if (upVotes.contains(widget.uid)) {
-                        upVotes.remove(widget.uid);
-                      }
-                    });
-                    await CloudFunctions.instance
-                        .getHttpsCallable(functionName: 'downVotePost')
-                        .call(<String, dynamic>{'id': widget.doc.documentID});
-                  }),
-              Text(NumberFormat.compact().format(downVotesCount),
-                  style: GoogleFonts.ubuntu(
-                      fontSize: 20, fontWeight: FontWeight.w600)),
-            ],
-          ),
-        ],
+                ),
+              ],
+            ),
+            widget.doc["mediaURL"] != '' || widget.doc["link"] != ''
+                ? SizedBox(height: 20)
+                : Container(),
+            widget.doc["mediaURL"] != ''
+                ? AspectRatio(
+                    aspectRatio: 4 / 3,
+                    child: Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.fill,
+                            image: CachedNetworkImageProvider(
+                                widget.doc["mediaURL"]),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : Container(),
+            widget.doc['link'] != "" ? SizedBox(height: 15) : Container(),
+            widget.doc['link'] != ""
+                ? Row(
+                    children: <Widget>[
+                      Text(
+                        'Related links',
+                        style: GoogleFonts.ubuntu(fontSize: 20),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: Linkify(
+                          text: widget.doc["link"],
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.ubuntu(
+                              fontWeight: FontWeight.w700, fontSize: 15),
+                          maxLines: 2,
+                          onOpen: (url) async {
+                            try {
+                              await launch(widget.doc["link"]);
+                            } catch (e) {}
+                          },
+                        ),
+                      ),
+                    ],
+                  )
+                : Container(),
+            SizedBox(height: 10),
+            Row(
+              children: <Widget>[
+                IconButton(
+                    icon: Icon(
+                      FontAwesomeIcons.arrowCircleUp,
+                      size: 35,
+                      color: upVotes.contains(widget.uid) == true
+                          ? Colors.green
+                          : Colors.grey,
+                    ),
+                    onPressed: () async {
+                      setState(() {
+                        upVotes.contains(widget.uid)
+                            ? upVotes.remove(widget.uid)
+                            : upVotes.add(widget.uid);
+                        if (downVotes.contains(widget.uid)) {
+                          downVotes.remove(widget.uid);
+                        }
+                      });
+                      await CloudFunctions.instance
+                          .getHttpsCallable(functionName: 'upVotePost')
+                          .call(<String, dynamic>{'id': widget.doc.documentID});
+                    }),
+                Text(NumberFormat.compact().format(upVotesCount),
+                    style: GoogleFonts.ubuntu(
+                        fontSize: 20, fontWeight: FontWeight.w600)),
+                SizedBox(width: 10),
+                IconButton(
+                    icon: Icon(
+                      FontAwesomeIcons.arrowCircleDown,
+                      size: 35,
+                      color: downVotes.contains(widget.uid)
+                          ? Colors.red
+                          : Colors.grey,
+                    ),
+                    onPressed: () async {
+                      setState(() {
+                        downVotes.contains(widget.uid)
+                            ? downVotes.remove(widget.uid)
+                            : downVotes.add(widget.uid);
+                        if (upVotes.contains(widget.uid)) {
+                          upVotes.remove(widget.uid);
+                        }
+                      });
+                      await CloudFunctions.instance
+                          .getHttpsCallable(functionName: 'downVotePost')
+                          .call(<String, dynamic>{'id': widget.doc.documentID});
+                    }),
+                Text(NumberFormat.compact().format(downVotesCount),
+                    style: GoogleFonts.ubuntu(
+                        fontSize: 20, fontWeight: FontWeight.w600)),
+              ],
+            ),
+            Divider(
+              height: 30,
+              thickness: 0.8,
+              color: Colors.grey,
+            ),
+          ],
+        ),
       ),
     );
   }
