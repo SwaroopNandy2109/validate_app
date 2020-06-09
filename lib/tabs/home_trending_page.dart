@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:validatedapp/tabs/appbar_tabs/Home_bar.dart';
 import 'package:validatedapp/tabs/appbar_tabs/Trending_bar.dart';
+import 'package:validatedapp/services/search.dart';
 
 class HomeTrendingPage extends StatefulWidget {
   @override
@@ -19,6 +20,14 @@ class _HomeTrendingPageState extends State<HomeTrendingPage> {
             'Posts',
             style: GoogleFonts.ubuntu(fontWeight: FontWeight.bold),
           ),
+          actions: <Widget>[
+            IconButton(
+              onPressed: () {
+                showSearch(context: context, delegate: SearchPosts());
+              },
+              icon: Icon(Icons.search),
+            )
+          ],
           centerTitle: true,
           bottom: TabBar(isScrollable: true, tabs: <Widget>[
             Tab(
