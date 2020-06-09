@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:validatedapp/search_page.dart';
 import 'package:validatedapp/tabs/appbar_tabs/Home_bar.dart';
 import 'package:validatedapp/tabs/appbar_tabs/Trending_bar.dart';
-import 'package:validatedapp/services/search.dart';
 
 class HomeTrendingPage extends StatefulWidget {
   @override
@@ -23,7 +23,8 @@ class _HomeTrendingPageState extends State<HomeTrendingPage> {
           actions: <Widget>[
             IconButton(
               onPressed: () {
-                showSearch(context: context, delegate: SearchPosts());
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SearchPage()));
               },
               icon: Icon(Icons.search),
             )

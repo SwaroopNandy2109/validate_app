@@ -123,7 +123,6 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
 
   getProducts() async {
     if (!hasMore) {
-      print('No More Products');
       return;
     }
     if (isLoading) {
@@ -148,7 +147,6 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
           .startAfterDocument(lastDocument)
           .limit(documentLimit)
           .getDocuments();
-      print(1);
     }
     if (querySnapshot.documents.length < documentLimit) {
       hasMore = false;

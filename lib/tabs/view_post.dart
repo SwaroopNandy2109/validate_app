@@ -170,17 +170,14 @@ class _ViewPostState extends State<ViewPost> {
               ? SizedBox(height: 20)
               : Container(),
           widget.doc["mediaURL"] != ''
-              ? AspectRatio(
-                  aspectRatio: 4 / 3,
-                  child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: CachedNetworkImageProvider(
-                              widget.doc["mediaURL"]),
-                        ),
-                      ),
+              ? CachedNetworkImage(
+                  imageUrl: widget.doc["mediaURL"],
+                  fit: BoxFit.contain,
+                  errorWidget: (context, a, b) => Center(
+                    child: Text(
+                      "Image cannot be loaded",
+                      style: GoogleFonts.ubuntu(
+                          fontWeight: FontWeight.bold, color: Colors.red),
                     ),
                   ),
                 )
