@@ -60,13 +60,16 @@ class _PostCardState extends State<PostCard> {
     int upVotesCount = upVotes.length;
     int downVotesCount = downVotes.length;
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ViewPost(
-                doc: widget.doc,
-                upVotes: upVotes,
-                downVotes: downVotes,
-                uid: widget.uid,
-              ))),
+      onTap: () async {
+        await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ViewPost(
+                  doc: widget.doc,
+                  upVotes: upVotes,
+                  downVotes: downVotes,
+                  uid: widget.uid,
+                )));
+        widget.refresh();
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
         padding: EdgeInsets.only(left: 10, right: 10, bottom: 20),
