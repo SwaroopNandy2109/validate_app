@@ -48,6 +48,13 @@ dependencies:
   auto_size_text: ^2.1.0
   time_formatter: ^1.0.0+5
   jiffy: ^3.0.1
+  flutter_launcher_icons: ^0.7.5
+
+flutter_icons:
+  ios: true
+  android: true
+  image_path_ios: "assets/check.png"
+  image_path_android: "assets/check.png"
 
 dev_dependencies:
   flutter_test:

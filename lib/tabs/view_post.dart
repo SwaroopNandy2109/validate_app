@@ -316,14 +316,18 @@ class _ViewPostState extends State<ViewPost> {
                                     size: 20,
                                     color: Colors.red,
                                   ),
-                                  onPressed: () {
-                                    CloudFunctions.instance
+                                  onPressed: () async {
+                                    setState(() {
+                                      isLoadingComments = true;
+                                    });
+                                    await CloudFunctions.instance
                                         .getHttpsCallable(
                                             functionName: 'deleteComment')
                                         .call(<String, dynamic>{
                                       'id': widget.doc.documentID,
                                       'commentId': comments[index].documentID,
                                     });
+                                    getComments();
                                     setState(() {
                                       comments.removeAt(index);
                                     });
@@ -369,26 +373,30 @@ class _ViewPostState extends State<ViewPost> {
     return TextField(
       controller: commentController,
       decoration: InputDecoration(
-          hintText: 'Post a Comment ...',
-          hintStyle: GoogleFonts.ubuntu(),
-          fillColor: Colors.white,
-          filled: true,
-          suffixIcon: IconButton(
-              icon: Icon(FontAwesomeIcons.comments),
-              onPressed: () async {
-                String comment = commentController.text;
-                commentController.clear();
-                setState(() {
-                  isLoadingComments = true;
-                });
-                await CloudFunctions.instance
-                    .getHttpsCallable(functionName: 'addComment')
-                    .call(<String, dynamic>{
-                  'id': widget.doc.documentID,
-                  'comment': comment,
-                });
-                getComments();
-              })),
+        hintText: 'Post a Comment ...',
+        hintStyle: GoogleFonts.ubuntu(),
+        fillColor: Colors.white,
+        filled: true,
+        suffixIcon: IconButton(
+          icon: Icon(FontAwesomeIcons.comments),
+          onPressed: () async {
+            String comment = commentController.text;
+            if (comment.isNotEmpty) {
+              commentController.clear();
+              setState(() {
+                isLoadingComments = true;
+              });
+              await CloudFunctions.instance
+                  .getHttpsCallable(functionName: 'addComment')
+                  .call(<String, dynamic>{
+                'id': widget.doc.documentID,
+                'comment': comment,
+              });
+              getComments();
+            }
+          },
+        ),
+      ),
     );
   }
 }
