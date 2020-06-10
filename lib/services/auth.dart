@@ -62,7 +62,6 @@ class AuthService implements BaseAuth {
         email: email, password: password);
     FirebaseUser user = result.user;
     _userFromFirebaseUser(user);
-    print("Login: " + user.displayName);
     return user.uid;
   }
 
@@ -107,7 +106,6 @@ class AuthService implements BaseAuth {
     user.updateProfile(_updateInfo);
 
     _userFromFirebaseUser(user);
-    print(user.uid);
     return user.uid;
   }
 

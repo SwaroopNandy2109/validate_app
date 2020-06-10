@@ -56,6 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
         androidUiSettings: AndroidUiSettings(
           toolbarColor: Colors.deepPurple,
           toolbarTitle: "Crop Profile Photo",
+          toolbarWidgetColor: Colors.white,
           statusBarColor: Colors.deepPurple[600],
           backgroundColor: Colors.white,
         ),
@@ -137,7 +138,6 @@ class _ProfilePageState extends State<ProfilePage> {
     });
 
     String mediaUrl = await uploadImage(file);
-    print("handleImageSubmit " + mediaUrl);
 
     String uid = await widget.auth.updateProfilePhoto(mediaUrl);
     DatabaseService(uid: uid).updateProfilePhoto(mediaUrl);
@@ -264,9 +264,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       await widget.auth.signOut();
       widget.logoutCallback();
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 
   @override

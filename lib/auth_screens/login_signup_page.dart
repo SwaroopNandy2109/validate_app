@@ -53,13 +53,11 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       try {
         if (_isLoginForm) {
           userId = await widget.auth.signInWithEmail(_email, _password);
-          print('Signed in: $userId');
         } else {
           userId = await widget.auth
               .regWithEmail(_email, _password, _firstName + " " + _lastName);
           widget.auth.sendEmailVerification();
           _showVerifyEmailSentDialog();
-          print('Signed up user: $userId');
         }
         setState(() {
           _isLoading = false;
@@ -71,7 +69,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           widget.loginCallback();
         }
       } catch (e) {
-        print('Error: $e');
         setState(() {
           _isLoading = false;
           _errorMessage = e.message;

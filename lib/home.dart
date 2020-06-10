@@ -39,7 +39,6 @@ class _HomePageState extends State<HomePage> {
 
   void getUser() async {
     FirebaseUser user = await AuthService().getCurrentUser();
-    print(user.email);
   }
 
   void _checkEmailVerification() async {

@@ -275,9 +275,7 @@ class _CommonPostPageState extends State<CommonPostPage> {
         storageRef.child("post_$postId.jpg").putFile(imageFile);
     StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
     String downloadUrl = await storageSnap.ref.getDownloadURL();
-    print(downloadUrl);
     downloadUrl = downloadUrl.replaceAll('.jpg', '_640x640.jpg');
-    print(downloadUrl);
     return downloadUrl;
   }
 
