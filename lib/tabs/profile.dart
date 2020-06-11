@@ -141,7 +141,16 @@ class _ProfilePageState extends State<ProfilePage> {
     String mediaUrl = await uploadImage(file);
 
     String uid = await AuthService().updateProfilePhoto(mediaUrl);
+    DocumentSnapshot prevImageSnap =
+        await Firestore.instance.collection('Users').document(uid).get();
+    String prevImageUrl = prevImageSnap.data["photoUrl"];
+    StorageReference prevImageDeleteRef =
+        await FirebaseStorage.instance.getReferenceFromUrl(prevImageUrl);
+    await prevImageDeleteRef.delete();
     await DatabaseService(uid: uid).updateProfilePhoto(mediaUrl);
+    StorageReference deleteRef = await FirebaseStorage.instance
+        .getReferenceFromUrl(mediaUrl.replaceAll('_640x640.jpg', '.jpg'));
+    await deleteRef.delete();
     setState(() {
       file = null;
       postId = Uuid().v4();
@@ -219,7 +228,6 @@ class _ProfilePageState extends State<ProfilePage> {
       await DatabaseService(uid: uid)
           .updateUsername(name.isEmpty || name == "" ? username : name);
       setState(() {
-//        _formKey.currentState.reset();
         loading = false;
       });
     }
