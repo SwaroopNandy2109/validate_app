@@ -98,14 +98,12 @@ class AuthService implements BaseAuth {
     return _auth.currentUser().asStream().map(_userFromFirebaseUser);
   }
 
-  Future<String> updateProfilePhoto(String photoUrl) async {
+  updateProfilePhoto(String photoUrl) async {
     UserUpdateInfo _updateInfo = UserUpdateInfo();
     _updateInfo.photoUrl = photoUrl;
     FirebaseUser user = await getCurrentUser();
-
-    user.updateProfile(_updateInfo);
-
-    _userFromFirebaseUser(user);
+    await user.updateProfile(_updateInfo);
+    await user.reload();
     return user.uid;
   }
 
@@ -114,7 +112,8 @@ class AuthService implements BaseAuth {
     _updateInfo.displayName = name;
     FirebaseUser user = await getCurrentUser();
 
-    user.updateProfile(_updateInfo);
+    await user.updateProfile(_updateInfo);
+    await user.reload();
 
     _userFromFirebaseUser(user);
     return user.uid;

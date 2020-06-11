@@ -43,9 +43,7 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
     posts = [];
     hasMore = true;
     lastDocument = null;
-    setState(() {
-      isLoading = false;
-    });
+    isLoading = false;
     if (categoryChoice == 'All') {
       await getProducts();
     } else {
@@ -54,6 +52,10 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
   }
 
   deletePost(documentId) async {
+    posts.removeWhere((doc) => doc.documentID == documentId);
+    setState(() {
+      isLoading = true;
+    });
     await DatabaseService().deletePost(documentId);
     await refreshList();
   }
@@ -151,8 +153,10 @@ class _TrendingBarPageState extends State<TrendingBarPage> {
     if (querySnapshot.documents.length < documentLimit) {
       hasMore = false;
     }
-    lastDocument = querySnapshot.documents[querySnapshot.documents.length - 1];
-    posts.addAll(querySnapshot.documents);
+    if (querySnapshot.documents.isNotEmpty) {
+      lastDocument = querySnapshot.documents.last;
+      posts.addAll(querySnapshot.documents);
+    }
     setState(() {
       isLoading = false;
     });

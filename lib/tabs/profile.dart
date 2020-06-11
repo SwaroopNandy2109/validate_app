@@ -124,8 +124,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<String> uploadImage(imageFile) async {
-    StorageUploadTask uploadTask =
-        storageRef.child("post_$postId.jpg").putFile(imageFile);
+    StorageUploadTask uploadTask = storageRef
+        .child("profilepics/profile_pic$postId.jpg")
+        .putFile(imageFile);
     StorageTaskSnapshot storageSnap = await uploadTask.onComplete;
     String downloadUrl = await storageSnap.ref.getDownloadURL();
     downloadUrl = downloadUrl.replaceAll('.jpg', '_640x640.jpg');
@@ -139,15 +140,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
     String mediaUrl = await uploadImage(file);
 
-    String uid = await widget.auth.updateProfilePhoto(mediaUrl);
-    DatabaseService(uid: uid).updateProfilePhoto(mediaUrl);
-
-    await Future.delayed(Duration(milliseconds: 1), () {
-      setState(() {
-        file = null;
-        postId = Uuid().v4();
-        loading = false;
-      });
+    String uid = await AuthService().updateProfilePhoto(mediaUrl);
+    await DatabaseService(uid: uid).updateProfilePhoto(mediaUrl);
+    setState(() {
+      file = null;
+      postId = Uuid().v4();
+      loading = false;
     });
   }
 
@@ -216,12 +214,12 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         loading = true;
       });
-      String uid = await widget.auth
+      String uid = await AuthService()
           .updateUsername(name.isEmpty || name == "" ? username : name);
-      DatabaseService(uid: uid)
+      await DatabaseService(uid: uid)
           .updateUsername(name.isEmpty || name == "" ? username : name);
       setState(() {
-        _formKey.currentState.reset();
+//        _formKey.currentState.reset();
         loading = false;
       });
     }
@@ -283,7 +281,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  DocumentSnapshot userSnapshot = snapshot.data;
+                  var userSnapshot = snapshot.data;
                   return Scaffold(
                     appBar: AppBar(
                       title: Text(
@@ -301,12 +299,13 @@ class _ProfilePageState extends State<ProfilePage> {
                               onTap: () => selectImage(context),
                               child: Stack(children: <Widget>[
                                 CircleAvatar(
-                                  backgroundImage: userSnapshot['photoUrl'] ==
+                                  backgroundImage: userSnapshot
+                                              .data['photoUrl'] ==
                                           null
                                       ? CachedNetworkImageProvider(
                                           'https://www.clipartkey.com/mpngs/m/126-1261738_computer-icons-person-login-anonymous-person-icon.png')
                                       : CachedNetworkImageProvider(
-                                          userSnapshot['photoUrl']),
+                                          userSnapshot.data['photoUrl']),
                                   backgroundColor: Colors.grey[400],
                                   radius: 70,
                                 ),
@@ -336,7 +335,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           GestureDetector(
                             onTap: () => {
-                              changeUsername(context, userSnapshot['username'])
+                              changeUsername(
+                                  context, userSnapshot.data['username'])
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -346,7 +346,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   width: 20,
                                 ),
                                 Text(
-                                  "${userSnapshot['username']}",
+                                  "${userSnapshot.data['username']}",
                                   style: styleText,
                                 ),
                                 Spacer(

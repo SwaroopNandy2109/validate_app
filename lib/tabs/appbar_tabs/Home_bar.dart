@@ -43,9 +43,7 @@ class _HomeBarPageState extends State<HomeBarPage> {
     posts = [];
     hasMore = true;
     lastDocument = null;
-    setState(() {
-      isLoading = false;
-    });
+    isLoading = false;
     if (categoryChoice == 'All') {
       await getProducts();
     } else {
@@ -54,6 +52,10 @@ class _HomeBarPageState extends State<HomeBarPage> {
   }
 
   deletePost(documentId) async {
+    posts.removeWhere((doc) => doc.documentID == documentId);
+    setState(() {
+      isLoading = true;
+    });
     await DatabaseService().deletePost(documentId);
     await refreshList();
   }

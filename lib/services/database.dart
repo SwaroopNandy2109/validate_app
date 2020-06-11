@@ -12,8 +12,8 @@ class DatabaseService {
   final CollectionReference postCollection =
       Firestore.instance.collection('Posts');
 
-  Future addUserData(String name, String photoUrl) async {
-    return await userCollection.document(uid).setData(
+  addUserData(String name, String photoUrl) async {
+    await userCollection.document(uid).setData(
       {
         'username': name,
         'photoUrl': photoUrl,
@@ -23,16 +23,16 @@ class DatabaseService {
     );
   }
 
-  Future updateProfilePhoto(String photoUrl) async {
-    userCollection.document(uid).updateData({'photoUrl': photoUrl});
+  updateProfilePhoto(String photoUrl) async {
+    await userCollection.document(uid).updateData({'photoUrl': photoUrl});
   }
 
-  Future updateUsername(String name) async {
-    userCollection.document(uid).updateData({'username': name});
+  updateUsername(String name) async {
+    await userCollection.document(uid).updateData({'username': name});
   }
 
-  Future deletePost(String documentId) async {
-    return await CloudFunctions.instance
+  deletePost(String documentId) async {
+    await CloudFunctions.instance
         .getHttpsCallable(functionName: 'deletePost')
         .call(<String, dynamic>{
       "id": documentId,
